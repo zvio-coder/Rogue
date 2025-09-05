@@ -1,0 +1,375 @@
+<!doctype html>
+<html lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
+<title>Roguechain — Dice Roll Edition (Mobile Optimized)</title>
+<style>
+  :root{
+    --bg:#0b0f14;--panel:#0f1620;--panel2:#0d141d;--ink:#e6edf3;--muted:#9aa5b1;--accent:#72a1ff;--good:#42d392;--bad:#ff6b6b;--edge:#1f2a37
+  }
+  *{box-sizing:border-box}
+  html,body{height:100%}
+  body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent}
+  .wrap{max-width:960px;margin:0 auto;padding:16px}
+  header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
+  .brand{font-weight:800;letter-spacing:.3px;font-size:clamp(16px,2.5vw,20px)}
+  .wallet{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
+  .pill{background:var(--panel);border:1px solid var(--edge);padding:8px 10px;border-radius:10px;display:flex;gap:8px;align-items:center;font-size:14px}
+  button{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px 14px;color:var(--ink);cursor:pointer;font-weight:600}
+  button:active{transform:scale(0.98)}
+  button:hover{border-color:#315a9f}
+  button.primary{background:#1b2736;border-color:#315a9f}
+  main{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
+  @media (max-width:860px){main{grid-template-columns:1fr}}
+  .card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:12px}
+  h2{margin:0 0 8px;font-size:18px}
+  .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
+  @media (max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
+  .stat{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:8px;text-align:center;font-size:14px}
+  .choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+  .choices button{width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:10px}
+  .choices .req{opacity:.8;font-size:12px}
+  .log{max-height:300px;overflow:auto;background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px;font:13px/1.5 ui-monospace,Consolas,Menlo,monospace}
+  .log .good{color:var(--good)}
+  .log .bad{color:var(--bad)}
+  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+  .hint{color:var(--muted);font-size:12px}
+  .divider{height:1px;background:var(--edge);margin:8px 0}
+  .tombstones{font:13px/1.4 ui-monospace,Consolas,Menlo,monospace}
+  .muted{color:var(--muted)}
+  /* Dice tray */
+  .check{background:var(--panel2);border:1px dashed var(--edge);border-radius:12px;padding:10px}
+  .tray{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
+  .die{width:64px;height:64px;border-radius:14px;background:var(--panel);border:2px solid var(--edge);display:flex;align-items:center;justify-content:center;font:700 20px/1 ui-monospace,Consolas;position:relative;user-select:none}
+  .die .label{position:absolute;bottom:4px;left:6px;font:10px/1.2 ui-monospace;color:var(--muted)}
+  .die .value{font-size:20px}
+  .die.armed{outline:2px solid var(--accent);box-shadow:0 0 0 4px rgba(114,161,255,.12)}
+  .die.disabled{opacity:.5}
+  .die.rolling{animation:shake .9s ease-in-out}
+  @keyframes shake{0%{transform:rotate(0)}25%{transform:rotate(8deg)}50%{transform:rotate(-8deg)}75%{transform:rotate(5deg)}100%{transform:rotate(0)}}
+  @media (max-width:480px){.die{width:56px;height:56px}.die .value{font-size:18px}}
+</style>
+</head>
+<body>
+  <div class="wrap">
+    <header>
+      <div class="brand">Roguechain — Dice Roll Edition</div>
+      <div class="wallet">
+        <div class="pill" id="balance">Balance: 0.00 FAKE</div>
+        <button id="btnFaucet">Add Test Coins</button>
+        <button id="btnWithdraw">Withdraw 5.00</button>
+      </div>
+    </header>
+
+    <main>
+      <section class="card">
+        <h2>Adventure</h2>
+        <div class="row">
+          <button id="btnStart" class="primary">Start Run (Pay Entry Fee)</button>
+          <div class="pill" id="entryFee">Entry fee: 5.00 FAKE</div>
+          <div class="pill" id="pass">No Character Pass</div>
+        </div>
+
+        <div class="stats">
+          <div class="stat">HP <div id="sHP">—</div></div>
+          <div class="stat">Rations <div id="sR">—</div></div>
+          <div class="stat">Light <div id="sL">—</div></div>
+          <div class="stat">Resolve <div id="sRV">—</div></div>
+          <div class="stat">Gold <div id="sG">—</div></div>
+          <div class="stat">Depth <div id="sD">—</div></div>
+        </div>
+
+        <div id="campRow" class="row" style="display:none">
+          <button id="btnRetire">Retire at Camp (Cash Out)</button>
+          <span class="hint">Camps appear every 4 depths. Retire here to bank your gold into your wallet.</span>
+        </div>
+
+        <div class="divider"></div>
+        <div class="choices" id="choices"></div>
+
+        <div class="divider"></div>
+        <div class="check" id="checkBox" style="display:none">
+          <div id="checkText" class="hint">—</div>
+          <div class="tray" aria-label="Dice tray">
+            <div class="die" id="d6" data-sides="6" role="button" aria-label="Roll d6"><span class="value">d6</span><span class="label">d6</span></div>
+            <div class="die" id="d12" data-sides="12" role="button" aria-label="Roll d12"><span class="value">d12</span><span class="label">d12</span></div>
+            <div class="die" id="d20" data-sides="20" role="button" aria-label="Roll d20"><span class="value">d20</span><span class="label">d20</span></div>
+          </div>
+          <div class="hint">Tap the highlighted die to roll. Meet or beat the DC to succeed.</div>
+        </div>
+
+        <div class="divider"></div>
+        <div class="log" id="log"></div>
+      </section>
+
+      <aside class="card">
+        <h2>How it works</h2>
+        <ul class="muted">
+          <li>Use <b>Add Test Coins</b> for demo funds.</li>
+          <li><b>Start Run</b> pays entry fee and mints a one-life Character Pass.</li>
+          <li>Each choice sets a <b>dice check</b> (die + DC). Tap the die to resolve.</li>
+          <li><b>Camps</b> every 4 depths let you <b>Retire</b> and bank loot to your wallet.</li>
+          <li>If you die, you lose unbanked loot and your pass burns (permadeath).</li>
+        </ul>
+        <div class="divider"></div>
+        <h2>Tombstones</h2>
+        <div class="tombstones" id="tombstones">—</div>
+      </aside>
+    </main>
+
+    <p class="hint" style="margin-top:10px">All data (wallet, tombstones) is stored locally in your browser (localStorage). Token: <b>FAKE</b>.</p>
+  </div>
+
+<script>
+(function(){
+  // ---------- Helpers & Storage ----------
+  const $ = sel => document.querySelector(sel);
+  const fmtMinor = (m) => `${(m/100).toFixed(2)} FAKE`;
+  const store = {
+    key: 'rc-web-dice-v3',
+    load(){ try{ return JSON.parse(localStorage.getItem(this.key)||'{}'); }catch(_){ return {}; } },
+    save(obj){ localStorage.setItem(this.key, JSON.stringify(obj)); }
+  };
+
+  // ---------- Global State ----------
+  const state = {
+    walletMinor: 0,
+    entryFeeMinorBase: 500, // 5.00 FAKE
+    pass: null,             // { runId, entryFeeMinor }
+    run: null,              // RunState
+    tombstones: [],         // [{runId, depth, gold, time}]
+    pendingCheck: null      // { text, die, dc, resolve(success, run) }
+  };
+  Object.assign(state, store.load());
+  if(!Array.isArray(state.tombstones)) state.tombstones = [];
+
+  function persist(){ store.save({ walletMinor: state.walletMinor, tombstones: state.tombstones }); }
+
+  // ---------- Run Model ----------
+  function newRun(runId){
+    return { runId, depth:0, hp:10, resolve:5, rations:3, light:3, gold:0, flags:new Set(), alive:true, log:[] };
+  }
+  function isCampDepth(d){ return d>0 && d%4===0; }
+  function addLog(rs, msg, cls){ rs.log.push(`<span class="${cls||''}">${msg}</span>`); }
+
+  // ---------- Elements ----------
+  const elBal = $('#balance');
+  const elEntry = $('#entryFee');
+  const elPass = $('#pass');
+  const elStart = $('#btnStart');
+  const elFaucet = $('#btnFaucet');
+  const elWithdraw = $('#btnWithdraw');
+  const elRetire = $('#btnRetire');
+  const elCampRow = $('#campRow');
+  const elChoices = $('#choices');
+  const elLog = $('#log');
+  const sHP=$('#sHP'), sR=$('#sR'), sL=$('#sL'), sRV=$('#sRV'), sG=$('#sG'), sD=$('#sD');
+  const elTombs = $('#tombstones');
+  const checkBox = $('#checkBox');
+  const checkText = $('#checkText');
+  const diceEls = [$('#d6'), $('#d12'), $('#d20')];
+
+  function dynamicEntryFee(){ const jitter = Math.floor(Math.random()*50); return Math.max(100, state.entryFeeMinorBase + jitter); }
+  let lastFee = dynamicEntryFee();
+
+  function updateWallet(){ elBal.textContent = `Balance: ${fmtMinor(state.walletMinor)}`; }
+
+  function refreshUI(){
+    elEntry.textContent = `Entry fee: ${fmtMinor(lastFee)}`;
+    elPass.textContent = state.pass ? `Character Pass #${state.pass.runId}` : 'No Character Pass';
+    updateWallet();
+
+    if(!state.run){
+      sHP.textContent='—'; sR.textContent='—'; sL.textContent='—'; sRV.textContent='—'; sG.textContent='—'; sD.textContent='—';
+      elLog.innerHTML=''; elChoices.innerHTML=''; elCampRow.style.display='none'; checkBox.style.display='none';
+      diceEls.forEach(el=>{ el.classList.remove('armed'); el.querySelector('.value').textContent = `d${el.dataset.sides}`; });
+      return;
+    }
+    const rs = state.run;
+    sHP.textContent = rs.hp; sR.textContent=rs.rations; sL.textContent=rs.light; sRV.textContent=rs.resolve; sG.textContent=rs.gold; sD.textContent=rs.depth;
+    elLog.innerHTML = rs.log.slice(-200).map(x=>`• ${x}`).join('<br>');
+    elCampRow.style.display = (isCampDepth(rs.depth) && rs.alive) ? 'flex':'none';
+    checkBox.style.display = state.pendingCheck ? 'block' : 'none';
+    diceEls.forEach(el=>{
+      const need = state.pendingCheck?.die;
+      el.classList.toggle('armed', Number(el.dataset.sides)===need);
+      el.classList.toggle('disabled', !!state.pendingCheck && Number(el.dataset.sides)!==need);
+    });
+  }
+
+  function renderChoices(rs, choices){
+    elChoices.innerHTML='';
+    choices.forEach(c=>{
+      const btn=document.createElement('button');
+      const req=document.createElement('span'); req.className='req'; req.textContent=`d${c.die} ≥ ${c.dc}`;
+      btn.appendChild(document.createTextNode(c.text));
+      btn.appendChild(req);
+      btn.onclick=()=>{ armCheck(c); };
+      elChoices.appendChild(btn);
+    });
+  }
+
+  function armCheck(check){
+    state.pendingCheck = check; // {text, die, dc, resolve}
+    checkText.textContent = `Check: ${check.text} — roll d${check.die} and meet or beat DC ${check.dc}`;
+    Array.from(elChoices.querySelectorAll('button')).forEach(b=>b.disabled=true);
+    refreshUI();
+  }
+
+  function animateRoll(el, sides, done){
+    const valEl = el.querySelector('.value');
+    el.classList.add('rolling');
+    let t=0; const dur=900; const step=70;
+    const tick = ()=>{
+      t+=step;
+      valEl.textContent = 1+Math.floor(Math.random()*sides);
+      if(t>=dur){
+        const final = 1+Math.floor(Math.random()*sides);
+        valEl.textContent = final;
+        el.classList.remove('rolling');
+        done(final);
+      } else { setTimeout(tick, step); }
+    };
+    tick();
+  }
+
+  diceEls.forEach(el=>{
+    el.addEventListener('click', ()=>{
+      const rs = state.run; if(!rs || !rs.alive) return;
+      const chk = state.pendingCheck; if(!chk) return;
+      const sides = Number(el.dataset.sides);
+      if(sides !== chk.die){ addLog(rs, `Wrong die selected (need d${chk.die}).`, 'bad'); refreshUI(); return; }
+      animateRoll(el, sides, (roll)=>{
+        const success = roll >= chk.dc;
+        addLog(rs, `Rolled ${roll} on d${sides} vs DC ${chk.dc}: ${success?'Success':'Fail'}.`, success?'good':'bad');
+        chk.resolve(success, rs);
+        state.pendingCheck = null;
+        Array.from(elChoices.querySelectorAll('button')).forEach(b=>b.disabled=false);
+        refreshUI();
+        afterPick();
+      });
+    });
+  });
+
+  function renderTombs(){
+    if(!state.tombstones.length){ elTombs.textContent='—'; return; }
+    elTombs.innerHTML = state.tombstones.map(t=>{
+      const d = new Date(t.time).toLocaleString();
+      return `RIP <b>#${t.runId}</b> — depth ${t.depth}, gold ${t.gold} <span class="muted">(${d})</span>`;
+    }).join('<br>');
+  }
+
+  // ---------- Encounter Generation (with dice checks) ----------
+  function weightedSample(list, k){
+    const pool = list.slice(); const out=[];
+    for(let n=0;n<Math.min(k, pool.length);n++){
+      const total = pool.reduce((a,c)=>a+(c.weight||10),0);
+      let pick = Math.floor(Math.random()*total); let idx=0;
+      for(let i=0;i<pool.length;i++){ pick -= (pool[i].weight||10); if(pick<0){ idx=i; break; } }
+      out.push(pool.splice(idx,1)[0]);
+    }
+    return out;
+  }
+
+  function choice(text, die, dc, weight, resolve){ return { text, die, dc, weight, resolve }; }
+
+  function generateChoices(rs){
+    const list = [];
+    // Search
+    list.push(choice('Search the ruins', 12, 7, 12, (ok,s)=>{
+      if(ok){ const r=Math.random(); if(r<0.4){ s.gold+=2; addLog(s,'You find 2 gold.','good'); } else if(r<0.7){ s.rations+=1; addLog(s,'You find rations.','good'); } else { s.flags.add('ancient_key'); addLog(s,'You pocket an ancient key.','good'); } }
+      else { s.hp-=3; addLog(s,'A sandfall trap! (-3 HP).','bad'); }
+    }));
+    // Fight
+    list.push(choice('Fight a lurking horror', 20, Math.min(15,10+Math.floor(rs.depth/2)), 10, (ok,s)=>{
+      if(ok){ s.gold+=3; addLog(s,'You slay it (+3 gold).','good'); }
+      else { s.hp-=4; addLog(s,'It wounds you (-4 HP).','bad'); }
+    }));
+    // Parley
+    list.push(choice('Parley with the bandits', 20, 10, 8, (ok,s)=>{
+      const hasTruce = s.flags.has('truce_bandits');
+      if(hasTruce && ok){ s.gold+=1; addLog(s,'Your truce holds. They tip you 1 gold.','good'); return; }
+      if(ok){ s.flags.add('truce_bandits'); addLog(s,'You broker a truce. (Flag set)','good'); }
+      else { s.hp-=2; addLog(s,'Talks sour; you’re roughed up (-2 HP).','bad'); }
+    }));
+    // Unlock (requires key)
+    if(rs.flags.has('ancient_key')){
+      list.push(choice('Unlock a sealed vault (key)', 12, 9, 6, (ok,s)=>{
+        s.flags.delete('ancient_key');
+        if(ok){ s.gold+=8; addLog(s,'Vault spills 8 gold.','good'); }
+        else { s.hp-=5; addLog(s,'It was trapped! (-5 HP).','bad'); }
+      }));
+    }
+    // Camp rest (only at camp)
+    if(isCampDepth(rs.depth)){
+      list.push(choice('Rest at the camp (heal 3, -1 ration)', 6, 4, 12, (ok,s)=>{
+        if(!ok){ addLog(s,'You fail to settle; restless night.','bad'); return; }
+        if(s.rations>0){ s.rations-=1; s.hp=Math.min(s.hp+3,12); addLog(s,'You rest and recover (+3 HP, -1 ration).','good'); }
+        else addLog(s,'No rations to rest.', 'bad');
+      }));
+    }
+
+    // Offer 2–3 choices
+    return weightedSample(list, Math.min(3, Math.max(2, list.length)));
+  }
+
+  function step(){
+    const rs = state.run; if(!rs || !rs.alive) return;
+    rs.depth += 1;
+    // ambient fatigue
+    if(Math.random()<Math.min(0.5, rs.depth*0.02)){ rs.hp -= 1; addLog(rs,'Fatigue nips at you (-1 HP).','bad'); }
+    if(isCampDepth(rs.depth)){ addLog(rs,'You reach a camp. You can retire safely here.'); }
+    renderChoices(rs, generateChoices(rs));
+    refreshUI();
+  }
+
+  function afterPick(){
+    const rs = state.run; if(!rs) return;
+    if(rs.hp<=0){ rs.alive=false; addLog(rs, `You die at depth ${rs.depth}. Unbanked loot lost (${rs.gold} gold). Pass burned.`, 'bad');
+      state.tombstones.unshift({ runId: rs.runId, depth: rs.depth, gold: rs.gold, time: Date.now() });
+      if(state.tombstones.length>50) state.tombstones.pop();
+      state.pass=null; state.run=null; persist(); renderTombs(); refreshUI(); return; }
+    step();
+  }
+
+  function renderTombs(){
+    if(!state.tombstones.length){ elTombs.textContent='—'; return; }
+    elTombs.innerHTML = state.tombstones.map(t=>{
+      const d = new Date(t.time).toLocaleString();
+      return `RIP <b>#${t.runId}</b> — depth ${t.depth}, gold ${t.gold} <span class="muted">(${d})</span>`;
+    }).join('<br>');
+  }
+
+  // ---------- Controls ----------
+  elFaucet.onclick = ()=>{ state.walletMinor += 2000; persist(); updateWallet(); };
+  elWithdraw.onclick = ()=>{ state.walletMinor = Math.max(0, state.walletMinor-500); persist(); updateWallet(); };
+
+  elStart.onclick = ()=>{
+    if(state.pass || state.run) return;
+    const fee = lastFee; if(state.walletMinor < fee){ alert('Insufficient funds for entry fee. Use Add Test Coins.'); return; }
+    state.walletMinor -= fee; persist(); updateWallet();
+    const runId = Math.floor(Date.now()/1000).toString(36);
+    state.pass = { runId, entryFeeMinor: fee };
+    state.run = newRun(runId);
+    addLog(state.run, `Run started. Entry fee: ${fmtMinor(fee)}.`);
+    step();
+    lastFee = dynamicEntryFee(); refreshUI();
+  };
+
+  elRetire.onclick = ()=>{
+    const rs = state.run; if(!rs) return;
+    if(!isCampDepth(rs.depth)){ addLog(rs,'You cannot retire here. Find a camp.'); refreshUI(); return; }
+    const payoutMinor = rs.gold*50; // 1 gold = 0.50 FAKE
+    state.walletMinor += payoutMinor; persist(); updateWallet();
+    addLog(rs, `You retire with ${rs.gold} gold → ${fmtMinor(payoutMinor)}.`, 'good');
+    rs.alive=false; state.pass=null; state.run=null; refreshUI();
+  };
+
+  // ---------- Init ----------
+  renderTombs();
+  refreshUI();
+})();
+</script>
+</body>
+</html>
