@@ -1,10 +1,9 @@
 <!doctype html>
-
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Roguechain — Dice Roll Edition (Scenarios x4, Mobile)</title>
+<title>Roguechain — d100 Story Threads (Mobile)</title>
 <style>
   :root{
     --bg:#0b0f14;--panel:#0f1620;--panel2:#0d141d;--ink:#e6edf3;--muted:#9aa5b1;--accent:#72a1ff;--good:#42d392;--bad:#ff6b6b;--edge:#1f2a37
@@ -26,7 +25,7 @@
   .card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:12px}
   h2{margin:0 0 8px;font-size:18px}
   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
-  @media (max-width:480px){.stats{grid-template-columns:repeat(2,1fr)}}
+  @media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}}
   .stat{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:8px;text-align:center;font-size:14px}
   .choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
   .choices button{width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:10px}
@@ -39,105 +38,110 @@
   .divider{height:1px;background:var(--edge);margin:8px 0}
   .tombstones{font:13px/1.4 ui-monospace,Consolas,Menlo,monospace}
   .muted{color:var(--muted)}
-  /* Dice tray */
-  .check{background:var(--panel2);border:1px dashed var(--edge);border-radius:12px;padding:10px}
-  .tray{display:flex;gap:12px;align-items:center;flex-wrap:wrap;margin-top:8px}
-  .die{width:64px;height:64px;border-radius:14px;background:var(--panel);border:2px solid var(--edge);display:flex;align-items:center;justify-content:center;font:700 20px/1 ui-monospace,Consolas;position:relative;user-select:none}
-  .die .label{position:absolute;bottom:4px;left:6px;font:10px/1.2 ui-monospace;color:var(--muted)}
-  .die .value{font-size:20px}
-  .die.armed{outline:2px solid var(--accent);box-shadow:0 0 0 4px rgba(114,161,255,.12)}
-  .die.disabled{opacity:.5}
-  .die.rolling{animation:shake .9s ease-in-out}
-  @keyframes shake{0%{transform:rotate(0)}25%{transform:rotate(8deg)}50%{transform:rotate(-8deg)}75%{transform:rotate(5deg)}100%{transform:rotate(0)}}
-  @media (max-width:480px){.die{width:56px;height:56px}.die .value{font-size:18px}}
+
   /* Scenario box */
   .scenario{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px}
   .scenario h3{margin:0 0 6px;font-size:16px}
   .scenario p{margin:0;color:#c8d0d8}
   .tag{display:inline-block;background:#1a2432;border:1px solid #2a3a52;border-radius:999px;padding:3px 8px;margin-right:6px;font-size:11px;color:#9fb4d6}
+
+  /* d100 die */
+  .die{width:88px;height:88px;border-radius:14px;background:radial-gradient(60% 60% at 50% 45%,#1a2432 0%,#0f1620 100%);border:2px solid var(--edge);
+       display:flex;align-items:center;justify-content:center;font:700 22px/1 ui-monospace,Consolas;color:#b8d3ff;position:relative;user-select:none}
+  .die .label{position:absolute;bottom:4px;left:6px;font:10px/1.2 ui-monospace;color:var(--muted)}
+  .die.rolling{animation:shake .9s ease-in-out}
+  @keyframes shake{0%{transform:rotate(0)}25%{transform:rotate(6deg)}50%{transform:rotate(-6deg)}75%{transform:rotate(3deg)}100%{transform:rotate(0)}}
+  .check{background:var(--panel2);border:1px dashed var(--edge);border-radius:12px;padding:10px}
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="brand">Roguechain — Dice Roll Edition</div>
+      <div class="brand">Roguechain — d100 Story Threads</div>
       <div class="wallet">
         <div class="pill" id="balance">Balance: 0.00 FAKE</div>
         <button id="btnFaucet">Add Test Coins</button>
         <button id="btnWithdraw">Withdraw 5.00</button>
       </div>
-    </header><main>
-  <section class="card">
-    <h2>Adventure</h2>
-    <div class="row">
-      <button id="btnStart" class="primary">Start Run (Pay Entry Fee)</button>
-      <div class="pill" id="entryFee">Entry fee: 5.00 FAKE</div>
-      <div class="pill" id="pass">No Character Pass</div>
-    </div>
+    </header>
 
-    <div class="stats">
-      <div class="stat">HP <div id="sHP">—</div></div>
-      <div class="stat">Rations <div id="sR">—</div></div>
-      <div class="stat">Light <div id="sL">—</div></div>
-      <div class="stat">Resolve <div id="sRV">—</div></div>
-      <div class="stat">Gold <div id="sG">—</div></div>
-      <div class="stat">Depth <div id="sD">—</div></div>
-    </div>
+    <main>
+      <section class="card">
+        <h2>Adventure</h2>
+        <div class="row">
+          <button id="btnStart" class="primary">Start Run (Pay Entry Fee)</button>
+          <div class="pill" id="entryFee">Entry fee: 5.00 FAKE</div>
+          <div class="pill" id="pass">No Character Pass</div>
+        </div>
 
-    <div id="campRow" class="row" style="display:none">
-      <button id="btnRetire">Retire at Camp (Cash Out)</button>
-      <span class="hint">Camps appear every 4 depths. Retire here to bank your gold into your wallet.</span>
-    </div>
+        <div class="stats">
+          <div class="stat">HP <div id="sHP">—</div></div>
+          <div class="stat">Resolve <div id="sRV">—</div></div>
+          <div class="stat">Light <div id="sL">—</div></div>
+          <div class="stat">Rations <div id="sR">—</div></div>
+          <div class="stat">Gold <div id="sG">—</div></div>
+          <div class="stat">Depth <div id="sD">—</div></div>
+        </div>
 
-    <div class="scenario" id="scenarioBox" style="display:none">
-      <div class="row" style="justify-content:space-between;align-items:center">
-        <h3 id="scTitle" style="margin:0">—</h3>
-        <div id="scTags"></div>
-      </div>
-      <p id="scText">—</p>
-    </div>
+        <div class="row" id="invRow" style="display:none">
+          <div class="pill" id="invText">Items: —</div>
+          <button id="btnUseBandage" style="display:none">Use bandage (+2 HP)</button>
+          <button id="btnUseTorch" style="display:none">Use torch (+1 Light)</button>
+        </div>
 
-    <div class="divider"></div>
-    <div class="choices" id="choices"></div>
+        <div id="campRow" class="row" style="display:none">
+          <button id="btnRetire">Retire at Camp (Cash Out)</button>
+          <span class="hint">Camps appear every 4 depths. Retire here to bank your haul.</span>
+        </div>
 
-    <div class="divider"></div>
-    <div class="check" id="checkBox" style="display:none">
-      <div id="checkText" class="hint">—</div>
-      <div class="tray" aria-label="Dice tray">
-        <div class="die" id="d6" data-sides="6" role="button" aria-label="Roll d6"><span class="value">d6</span><span class="label">d6</span></div>
-        <div class="die" id="d12" data-sides="12" role="button" aria-label="Roll d12"><span class="value">d12</span><span class="label">d12</span></div>
-        <div class="die" id="d20" data-sides="20" role="button" aria-label="Roll d20"><span class="value">d20</span><span class="label">d20</span></div>
-      </div>
-      <div class="hint">Tap the highlighted die to roll. Meet or beat the DC to succeed.</div>
-    </div>
+        <div class="scenario" id="scenarioBox" style="display:none">
+          <div class="row" style="justify-content:space-between;align-items:center">
+            <h3 id="scTitle" style="margin:0">—</h3>
+            <div id="scTags"></div>
+          </div>
+          <p id="scText">—</p>
+        </div>
 
-    <div class="divider"></div>
-    <div class="log" id="log"></div>
-  </section>
+        <div class="divider"></div>
+        <div class="choices" id="choices"></div>
 
-  <aside class="card">
-    <h2>How it works</h2>
-    <ul class="muted">
-      <li>Every turn spawns a fresh <b>scenario</b> with <b>4 choices</b> (Safe / Bold / Risky / Wild).</li>
-      <li>Each choice sets a <b>dice check</b> (die + DC). Tap the die to resolve.</li>
-      <li>Camps every 4 depths let you <b>Retire</b> and bank loot to your wallet.</li>
-      <li>If you die, you lose unbanked loot and your pass burns (permadeath).</li>
-    </ul>
-    <div class="divider"></div>
-    <h2>Tombstones</h2>
-    <div class="tombstones" id="tombstones">—</div>
-  </aside>
-</main>
+        <div class="divider"></div>
+        <div class="check" id="checkBox" style="display:none">
+          <div id="checkText" class="hint">—</div>
+          <div class="row">
+            <div class="die" id="d100" role="button" aria-label="Roll d100"><span class="value">d100</span><span class="label">d100</span></div>
+          </div>
+          <div class="hint">Tap to roll. Succeed if your roll meets or beats the DC (after any item bonuses).</div>
+        </div>
 
-<p class="hint" style="margin-top:10px">All data (wallet, tombstones) is stored locally in your browser (localStorage). Token: <b>FAKE</b>.</p>
+        <div class="divider"></div>
+        <div class="log" id="log"></div>
+      </section>
 
-  </div><script>
+      <aside class="card">
+        <h2>How it works</h2>
+        <ul class="muted">
+          <li>Runs follow a **story thread** (Vault / Caravan / Plague) that advances by stage.</li>
+          <li>Every turn shows a new **coherent scenario** with **4 options** (varied DCs).</li>
+          <li>All checks use a single **d100** roll; item bonuses can help.</li>
+          <li>Camps every 4 depths let you **Retire**; permadeath and tombstones apply.</li>
+        </ul>
+        <div class="divider"></div>
+        <h2>Tombstones</h2>
+        <div class="tombstones" id="tombstones">—</div>
+      </aside>
+    </main>
+
+    <p class="hint" style="margin-top:10px">Saves to localStorage. Token: <b>FAKE</b>.</p>
+  </div>
+
+<script>
 (function(){
   // ---------- Helpers & Storage ----------
   const $ = sel => document.querySelector(sel);
   const fmtMinor = (m) => `${(m/100).toFixed(2)} FAKE`;
   const store = {
-    key: 'rc-web-dice-scenarios-v1',
+    key: 'rc-web-d100-threads-v1',
     load(){ try{ return JSON.parse(localStorage.getItem(this.key)||'{}'); }catch(_){ return {}; } },
     save(obj){ localStorage.setItem(this.key, JSON.stringify(obj)); }
   };
@@ -147,49 +151,82 @@
     walletMinor: 0,
     entryFeeMinorBase: 500,
     pass: null,
-    run: null,
+    run: null,        // {hp,resolve,light,rations,gold,depth,alive,flags:Set,inv:{},thread:{id,stage}}
     tombstones: [],
-    pendingCheck: null,
-    recentScenarios: [] // cooldown list of scenario IDs to avoid repeats
+    pendingCheck: null // { text, dc, bonus, resolve(success, run) }
   };
   Object.assign(state, store.load());
   if(!Array.isArray(state.tombstones)) state.tombstones = [];
-  if(!Array.isArray(state.recentScenarios)) state.recentScenarios = [];
 
-  function persist(){ store.save({ walletMinor: state.walletMinor, tombstones: state.tombstones, recentScenarios: state.recentScenarios }); }
+  function persist(){ store.save({ walletMinor: state.walletMinor, tombstones: state.tombstones }); }
 
   // ---------- Run Model ----------
   function newRun(runId){
-    return { runId, depth:0, hp:10, resolve:5, rations:3, light:3, gold:0, flags:new Set(), alive:true, log:[], scenario:null };
+    return {
+      runId, depth:0, hp:10, resolve:5, light:3, rations:3, gold:0,
+      alive:true, flags:new Set(),
+      inv:{ torch:1, bandage:1, lockpick:0, herbs:0, relic:0 }, // starters
+      log:[], scenario:null, thread: pickThread()
+    };
   }
   function isCampDepth(d){ return d>0 && d%4===0; }
   function addLog(rs, msg, cls){ rs.log.push(`<span class="${cls||''}">${msg}</span>`); }
 
-  // ---------- Elements ----------
-  const elBal = $('#balance');
-  const elEntry = $('#entryFee');
-  const elPass = $('#pass');
-  const elStart = $('#btnStart');
-  const elFaucet = $('#btnFaucet');
-  const elWithdraw = $('#btnWithdraw');
-  const elRetire = $('#btnRetire');
-  const elCampRow = $('#campRow');
-  const elChoices = $('#choices');
-  const elLog = $('#log');
-  const sHP=$('#sHP'), sR=$('#sR'), sL=$('#sL'), sRV=$('#sRV'), sG=$('#sG'), sD=$('#sD');
-  const elTombs = $('#tombstones');
-  const checkBox = $('#checkBox');
-  const checkText = $('#checkText');
-  const diceEls = [$('#d6'), $('#d12'), $('#d20')];
-  const scBox = $('#scenarioBox');
-  const scTitle = $('#scTitle');
-  const scText = $('#scText');
-  const scTags = $('#scTags');
+  // ---------- Threads (coherent arcs) ----------
+  const Threads = {
+    vault: {
+      name: 'Ancient Vault',
+      stages: [
+        { key:'trail',    t:'Following the Map',  d:(rs)=>`An old map points to a vault in the ${pick(['hills','bog','canyon'])}. You must find the entrance before rivals do.`, tags:['Vault','Trail'] },
+        { key:'threshold',t:'Sealed Threshold',   d:(rs)=>`You find a stone door veined with sigils. Getting inside will take care—or force.`, tags:['Vault','Ward'] },
+        { key:'hazards',  t:'Hall of Hazards',    d:(rs)=>`A corridor of plates, darts, and chutes. The treasure must be near.`, tags:['Vault','Traps'] },
+        { key:'chamber',  t:'The Inner Chamber',  d:(rs)=>`At last: a plinth cradles a relic shard, watched by silent statues.`, tags:['Vault','Relic'] },
+      ]
+    },
+    caravan: {
+      name: 'Caravan Rescue',
+      stages: [
+        { key:'scout',    t:'Smoke on the Road',  d:()=>`A trade caravan smolders ahead; raiders still prowl the verge. Survivors may be hiding.`, tags:['Road','Raiders'] },
+        { key:'ambush',   t:'Counter-Ambush',     d:()=>`Tracks lead to a ravine camp. You could strike now—or shadow them.`, tags:['Ravine','Ambush'] },
+        { key:'release',  t:'Bound Prisoners',    d:()=>`Captives are guarded near the fire. A clean rescue will be tricky.`, tags:['Rescue','Stealth'] },
+        { key:'escort',   t:'Escort to Safety',   d:()=>`Marshalling the shaken merchants, you must escort them through nightfall.`, tags:['Escort','Night'] },
+      ]
+    },
+    plague: {
+      name: 'Plague in the Fen',
+      stages: [
+        { key:'rumors',   t:'Sickly Village',     d:()=>`In the reed-choked fen, a village coughs. A pall hangs over the well.`, tags:['Fen','Sickness'] },
+        { key:'source',   t:'Find the Source',    d:()=>`Symptoms point to the old tannery. Fumes curl from its vents.`, tags:['Tannery','Miasma'] },
+        { key:'formula',  t:'Brew a Remedy',      d:()=>`With herbs and tinctures you might brew a cure—if you get the ratios right.`, tags:['Herbs','Alchemy'] },
+        { key:'deliver',  t:'Distribute Aid',     d:()=>`Pale faces crowd your cart. Keep order as you deliver the tonic.`, tags:['Relief','Crowd'] },
+      ]
+    }
+  };
+  function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function pickThread(){
+    const id = pick(['vault','caravan','plague']);
+    return { id, stage:0 };
+  }
+
+  // ---------- UI Elements ----------
+  const elBal = $('#balance'), elEntry = $('#entryFee'), elPass = $('#pass'),
+        elStart = $('#btnStart'), elFaucet = $('#btnFaucet'), elWithdraw = $('#btnWithdraw'),
+        elRetire = $('#btnRetire'), elCampRow = $('#campRow'), elChoices = $('#choices'),
+        elLog = $('#log'), elTombs = $('#tombstones'),
+        sHP=$('#sHP'), sRV=$('#sRV'), sL=$('#sL'), sR=$('#sR'), sG=$('#sG'), sD=$('#sD'),
+        scBox = $('#scenarioBox'), scTitle=$('#scTitle'), scText=$('#scText'), scTags=$('#scTags'),
+        checkBox=$('#checkBox'), checkText=$('#checkText'), dieEl=$('#d100'),
+        invRow=$('#invRow'), invText=$('#invText'), btnBandage=$('#btnUseBandage'), btnTorch=$('#btnUseTorch');
 
   function dynamicEntryFee(){ const jitter = Math.floor(Math.random()*50); return Math.max(100, state.entryFeeMinorBase + jitter); }
   let lastFee = dynamicEntryFee();
-
   function updateWallet(){ elBal.textContent = `Balance: ${fmtMinor(state.walletMinor)}`; }
+
+  function invString(inv){
+    const parts = [];
+    for (const [k,v] of Object.entries(inv)) if(v>0) parts.push(`${k}×${v}`);
+    return parts.length? parts.join(', ') : '—';
+  }
 
   function refreshUI(){
     elEntry.textContent = `Entry fee: ${fmtMinor(lastFee)}`;
@@ -197,151 +234,373 @@
     updateWallet();
 
     if(!state.run){
-      sHP.textContent='—'; sR.textContent='—'; sL.textContent='—'; sRV.textContent='—'; sG.textContent='—'; sD.textContent='—';
+      [sHP,sRV,sL,sR,sG,sD].forEach(x=>x.textContent='—');
       elLog.innerHTML=''; elChoices.innerHTML=''; elCampRow.style.display='none'; checkBox.style.display='none'; scBox.style.display='none';
-      diceEls.forEach(el=>{ el.classList.remove('armed'); el.querySelector('.value').textContent = `d${el.dataset.sides}`; });
+      invRow.style.display='none'; btnBandage.style.display='none'; btnTorch.style.display='none';
+      dieEl.querySelector('.value').textContent='d100';
       return;
     }
     const rs = state.run;
-    sHP.textContent = rs.hp; sR.textContent=rs.rations; sL.textContent=rs.light; sRV.textContent=rs.resolve; sG.textContent=rs.gold; sD.textContent=rs.depth;
+    sHP.textContent = rs.hp; sRV.textContent=rs.resolve; sL.textContent=rs.light; sR.textContent=rs.rations; sG.textContent=rs.gold; sD.textContent=rs.depth;
     elLog.innerHTML = rs.log.slice(-200).map(x=>`• ${x}`).join('<br>');
     elCampRow.style.display = (isCampDepth(rs.depth) && rs.alive) ? 'flex':'none';
     checkBox.style.display = state.pendingCheck ? 'block' : 'none';
-    diceEls.forEach(el=>{
-      const need = state.pendingCheck?.die;
-      el.classList.toggle('armed', Number(el.dataset.sides)===need);
-      el.classList.toggle('disabled', !!state.pendingCheck && Number(el.dataset.sides)!==need);
-    });
+
+    invRow.style.display='flex';
+    invText.textContent = `Items: ${invString(rs.inv)}`;
+    btnBandage.style.display = rs.inv.bandage>0 ? 'inline-flex':'none';
+    btnTorch.style.display = rs.inv.torch>0 ? 'inline-flex':'none';
 
     if(rs.scenario){
       scBox.style.display='block';
       scTitle.textContent = rs.scenario.title;
-      scText.textContent = rs.scenario.text;
-      scTags.innerHTML = rs.scenario.tags.map(t=>`<span class="tag">${t}</span>`).join('');
-    } else { scBox.style.display='none'; }
+      scText.textContent  = rs.scenario.text;
+      scTags.innerHTML    = rs.scenario.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+    } else scBox.style.display='none';
   }
 
+  // ---------- Inventory use ----------
+  function useBandage(){
+    const rs = state.run; if(!rs || rs.inv.bandage<=0 || !rs.alive) return;
+    rs.inv.bandage--; rs.hp = Math.min(rs.hp+2, 12);
+    addLog(rs,'You use a bandage (+2 HP).','good'); refreshUI();
+  }
+  function useTorch(){
+    const rs = state.run; if(!rs || rs.inv.torch<=0 || !rs.alive) return;
+    rs.inv.torch--; rs.light += 1;
+    addLog(rs,'You light a torch (+1 Light).','good'); refreshUI();
+  }
+  btnBandage.onclick = useBandage;
+  btnTorch.onclick = useTorch;
+
+  // ---------- Choices & Checks ----------
   function renderChoices(rs, choices){
     elChoices.innerHTML='';
     choices.forEach(c=>{
       const btn=document.createElement('button');
-      const req=document.createElement('span'); req.className='req'; req.textContent=`${c.risk} · d${c.die} ≥ ${c.dc}`;
+      const req=document.createElement('span'); req.className='req'; req.textContent=`DC ${c.dc}${c.bonusDesc?` (${c.bonusDesc})`:''}`;
       btn.appendChild(document.createTextNode(c.text));
       btn.appendChild(req);
       btn.onclick=()=>{ armCheck(c); };
       elChoices.appendChild(btn);
     });
   }
-
   function armCheck(check){
-    state.pendingCheck = check; // {text, die, dc, risk, resolve}
-    checkText.textContent = `Check: ${check.text} — roll d${check.die} and meet DC ${check.dc} (${check.risk})`;
+    state.pendingCheck = check; // { text, dc, bonus(run), bonusDesc, resolve }
+    const rs = state.run;
+    const bonus = check.bonus? check.bonus(rs) : 0;
+    checkText.textContent = `Check: ${check.text} — DC ${check.dc}${bonus?` (bonus +${bonus})`:''}`;
     Array.from(elChoices.querySelectorAll('button')).forEach(b=>b.disabled=true);
     refreshUI();
   }
-
-  function animateRoll(el, sides, done){
-    const valEl = el.querySelector('.value');
-    el.classList.add('rolling');
-    let t=0; const dur=900; const step=70;
+  function animateRoll(done){
+    const valEl = dieEl.querySelector('.value');
+    dieEl.classList.add('rolling');
+    let t=0; const dur=900; const step=60;
     const tick = ()=>{
-      t+=step; valEl.textContent = 1+Math.floor(Math.random()*sides);
-      if(t>=dur){ const final = 1+Math.floor(Math.random()*sides); valEl.textContent = final; el.classList.remove('rolling'); done(final);} else setTimeout(tick, step);
+      t+=step; valEl.textContent = (1+Math.floor(Math.random()*100)).toString().padStart(2,'0');
+      if(t>=dur){
+        const final = 1+Math.floor(Math.random()*100);
+        valEl.textContent = final.toString().padStart(2,'0');
+        dieEl.classList.remove('rolling');
+        done(final);
+      } else setTimeout(tick, step);
     };
     tick();
   }
-
-  diceEls.forEach(el=>{
-    el.addEventListener('click', ()=>{
-      const rs = state.run; if(!rs || !rs.alive) return;
-      const chk = state.pendingCheck; if(!chk) return;
-      const sides = Number(el.dataset.sides);
-      if(sides !== chk.die){ addLog(rs, `Wrong die selected (need d${chk.die}).`, 'bad'); refreshUI(); return; }
-      animateRoll(el, sides, (roll)=>{
-        const success = roll >= chk.dc;
-        addLog(rs, `Rolled ${roll} on d${sides} vs DC ${chk.dc}: ${success?'Success':'Fail'}.`, success?'good':'bad');
-        chk.resolve(success, rs);
-        state.pendingCheck = null;
-        Array.from(elChoices.querySelectorAll('button')).forEach(b=>b.disabled=false);
-        refreshUI();
-        afterPick();
-      });
+  dieEl.addEventListener('click', ()=>{
+    const rs = state.run; if(!rs || !rs.alive) return;
+    const chk = state.pendingCheck; if(!chk) return;
+    animateRoll((roll)=>{
+      const bonus = chk.bonus? chk.bonus(rs):0;
+      const total = roll + bonus;
+      const success = total >= chk.dc;
+      addLog(rs, `Rolled ${roll}${bonus?` + ${bonus}`:''} = ${total} vs DC ${chk.dc}: ${success?'Success':'Fail'}.`, success?'good':'bad');
+      chk.resolve(success, rs);
+      state.pendingCheck = null;
+      Array.from(elChoices.querySelectorAll('button')).forEach(b=>b.disabled=false);
+      refreshUI();
+      afterPick();
     });
   });
 
-  function renderTombs(){
-    if(!state.tombstones.length){ elTombs.textContent='—'; return; }
-    elTombs.innerHTML = state.tombstones.map(t=>{
-      const d = new Date(t.time).toLocaleString();
-      return `RIP <b>#${t.runId}</b> — depth ${t.depth}, gold ${t.gold} <span class="muted">(${d})</span>`;
-    }).join('<br>');
+  // ---------- Scenario builders per thread (with varying DCs & item bonuses) ----------
+  function scenarioFor(rs){
+    const t = Threads[rs.thread.id];
+    const st = Math.min(rs.thread.stage, t.stages.length-1);
+    const node = t.stages[st];
+    const title = `${t.name} — ${node.t}`;
+    const text  = node.d(rs);
+    const tags  = [t.name, `Stage ${st+1}`].concat(node.tags||[]);
+    return { title, text, tags, threadId: rs.thread.id, stage: st };
   }
 
-  // ---------- Scenario Generator (Large variety, low repeats) ----------
-  const Biomes = ['Crypt','Forest','Cavern','Ruins','Desert','Coast','Bog','Tundra'];
-  const Objectives = ['rescue a captive','salvage supplies','map a route','recover a relic','hunt a beast','escort a caravan','broker a truce','cleanse a curse'];
-  const Obstacles = ['bandit ambush','arcane ward','rockfall maze','toxic spores','quicksand field','ghostly wails','flooded passage','mirror illusions'];
-  const Twists = ['a rival arrives','time is short','the moonlight warps things','someone betrays you','an omen chills the air','you are being watched'];
+  function choicesFor(rs, sc){
+    // Four actions with different DCs and situational bonuses.
+    // Bonuses read inventory/flags and return a number (added to d100).
+    const ez   = (base)=> Math.max(35, base + Math.floor(rs.depth/3) - 5);  // easier DC
+    const med  = (base)=> Math.min(80, base + Math.floor(rs.depth/2));      // medium DC
+    const hard = (base)=> Math.min(95, base + Math.floor(rs.depth*0.8));    // hard DC
+    const wild = (base)=> Math.min(99, base + rs.depth);                    // very hard DC
 
-  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
-  function titleCase(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
-  function makeScenario(depth){
-    let tries=0; let id;
-    let biome = rand(Biomes), obj = rand(Objectives), obs = rand(Obstacles), twist = Math.random()<0.6? rand(Twists):null;
-    while(tries<50){
-      id = `${biome}|${obj}|${obs}|${twist||''}`;
-      if(!state.recentScenarios.includes(id)) break;
-      biome = rand(Biomes); obj = rand(Objectives); obs = rand(Obstacles); twist = Math.random()<0.6? rand(Twists):null; tries++;
+    // Common bonuses depending on items/flags
+    const bonusTorch   = (r)=> r.light>0 ? 5 : 0;
+    const bonusResolve = (r)=> Math.max(0, r.resolve-5); // +1 per resolve above 5
+    const bonusPick    = (r)=> r.inv.lockpick>0 ? 10 : 0;
+    const bonusHerbs   = (r)=> r.inv.herbs>0 ? 8 : 0;
+
+    // Define text templates & effects per thread stage
+    const acts = [];
+
+    if(sc.threadId==='vault'){
+      if(sc.stage===0){ // trail
+        acts.push({
+          text:'Survey ridgelines carefully', dc: ez(45), bonus: bonusTorch, bonusDesc:'+5 if Light>0',
+          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'You mark safe approaches (+1 Resolve).','good'); } else { r.hp--; addLog(r,'Loose shale scrapes you (-1 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Shadow rival tracks', dc: med(55), bonus: bonusResolve, bonusDesc:'+1 per Resolve above 5',
+          resolve:(ok,r)=>{ if(ok){ r.gold+=2; addLog(r,'You find dropped coin (+2 gold).','good'); } else { r.rations=Math.max(0,r.rations-1); addLog(r,'You get turned around (-1 rations).','bad'); } }
+        });
+        acts.push({
+          text:'Force march to the marker', dc: hard(70),
+          resolve:(ok,r)=>{ if(ok){ r.light++; addLog(r,'You reach before dusk (+1 Light).','good'); } else { r.hp-=2; addLog(r,'Exhaustion sets in (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Blaze a new shortcut', dc: wild(80),
+          resolve:(ok,r)=>{ if(ok){ r.inv.torch++; addLog(r,'You discover a vent with dry wood (+1 torch).','good'); } else { r.hp-=3; addLog(r,'You slip down a scree slope (-3 HP).','bad'); } }
+        });
+      }
+      if(sc.stage===1){ // threshold
+        acts.push({
+          text:'Work the sigils with care', dc: med(60), bonus: bonusTorch, bonusDesc:'+5 if Light>0',
+          resolve:(ok,r)=>{ if(ok){ r.flags.add('ward_softened'); addLog(r,'You weaken the ward.','good'); } else { r.hp-=2; addLog(r,'A glyph sparks you (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Use lockpick on side grate', dc: ez(50), bonus: bonusPick, bonusDesc:'+10 if Lockpick',
+          resolve:(ok,r)=>{ if(ok){ r.inv.lockpick=Math.max(0,r.inv.lockpick-1); r.light++; addLog(r,'Grate yields; you stash a torch (+1 Light, -1 Lockpick).','good'); } else { addLog(r,'Pick snaps (no entry).','bad'); r.inv.lockpick=Math.max(0,r.inv.lockpick-1); } }
+        });
+        acts.push({
+          text:'Wedge door and pry', dc: hard(72),
+          resolve:(ok,r)=>{ if(ok){ r.gold+=3; addLog(r,'Stone chips reveal a cache (+3 gold).','good'); } else { r.hp-=3; addLog(r,'Lever bucks (-3 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Call the statues’ bluff', dc: wild(85), bonus: bonusResolve, bonusDesc:'+Resolve bonus',
+          resolve:(ok,r)=>{ if(ok){ r.flags.add('statues_wary'); addLog(r,'The statues still… for now.','good'); } else { r.hp-=4; addLog(r,'Stone eyes flare—pain (-4 HP).','bad'); } }
+        });
+      }
+      if(sc.stage===2){ // hazards
+        acts.push({
+          text:'Crawl under plates', dc: med(62),
+          resolve:(ok,r)=>{ if(ok){ r.gold+=2; addLog(r,'You salvage a trinket (+2 gold).','good'); } else { r.hp-=2; addLog(r,'A dart nicks you (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Sprint the gauntlet', dc: hard(76),
+          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Adrenal surge (+1 Resolve).','good'); } else { r.hp-=3; addLog(r,'Panels collapse (-3 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Probe with pole and torch', dc: ez(48), bonus: (r)=> bonusTorch(r)+2, bonusDesc:'+5 Light, +2 tool',
+          resolve:(ok,r)=>{ if(ok){ r.inv.torch=Math.max(0,r.inv.torch-1); r.rations++; addLog(r,'Safe path found (+1 rations, -1 torch).','good'); } else { r.hp--; addLog(r,'Soot chokes (-1 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Risk the chute for speed', dc: wild(88),
+          resolve:(ok,r)=>{ if(ok){ r.flags.add('backdoor'); addLog(r,'A slide to a back passage!','good'); } else { r.hp-=4; addLog(r,'You tumble hard (-4 HP).','bad'); } }
+        });
+      }
+      if(sc.stage===3){ // chamber
+        acts.push({
+          text:'Lift shard with tongs', dc: med(65),
+          resolve:(ok,r)=>{ if(ok){ r.inv.relic++; addLog(r,'Relic shard claimed (+1 relic).','good'); } else { r.hp-=2; addLog(r,'Runes bite (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Swap weight with sandbag', dc: hard(74),
+          resolve:(ok,r)=>{ if(ok){ r.gold+=6; addLog(r,'Counterweight fooled (+6 gold).','good'); } else { r.hp-=3; addLog(r,'Pedestal jerks (-3 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Appease statues with light', dc: ez(50), bonus: bonusTorch, bonusDesc:'+5 if Light>0',
+          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Glares soften (+1 Resolve).','good'); } else { r.hp--; addLog(r,'Shadows crowd (-1 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Grab and dash', dc: wild(90),
+          resolve:(ok,r)=>{ if(ok){ r.inv.relic++; r.gold+=4; addLog(r,'You snatch and sprint (+1 relic, +4 gold).','good'); } else { r.hp-=5; addLog(r,'Statues animate (-5 HP).','bad'); } }
+        });
+      }
     }
-    const title = `${biome}: ${titleCase(obj)}`;
-    const text = `You reach a ${biome.toLowerCase()} where you must ${obj}. The path is threatened by ${obs}${twist?`, and ${twist}`:''}.`;
-    const tags = [biome, obs.split(' ')[0], 'Depth '+depth];
-    return { id, title, text, tags };
-  }
 
-  function pushRecent(id){
-    state.recentScenarios.unshift(id);
-    const MAX = 120; // cooldown length — prevents repeats for a long time
-    if(state.recentScenarios.length>MAX) state.recentScenarios.pop();
-    persist();
-  }
-
-  // ---------- Choice Factory (4 risk tiers every turn) ----------
-  const Risks = {
-    Safe:   { die:6,  baseDC:3,  dmg:1, loot:[0,1,2], bonus:0 },
-    Bold:   { die:12, baseDC:7,  dmg:2, loot:[1,2,3,4], bonus:1 },
-    Risky:  { die:20, baseDC:12, dmg:4, loot:[3,4,5,6,8], bonus:2 },
-    Wild:   { die:20, baseDC:15, dmg:6, loot:[5,8,10,12], bonus:3 }
-  };
-
-  function dcFor(risk, depth){ return Math.min(20, risk.baseDC + Math.floor(depth/3) + (Math.random()<0.3?1:0)); }
-
-  function fourChoicesFor(scenario, rs){
-    const depth = rs.depth;
-    const themed = {
-      Safe: `Scout the area and avoid ${scenario.tags[1].toLowerCase()}`,
-      Bold: `Negotiate or distract those behind the ${scenario.tags[1].toLowerCase()}`,
-      Risky: `Exploit a weakness in the ${scenario.tags[1].toLowerCase()}`,
-      Wild: `Charge straight through the ${scenario.tags[1].toLowerCase()}`
-    };
-    return Object.entries(Risks).map(([name, r])=>{
-      const dc = dcFor(r, depth);
-      return {
-        text: themed[name],
-        risk: name,
-        die: r.die,
-        dc,
-        resolve: (ok,s)=>{
-          if(ok){
-            const g = r.loot[Math.floor(Math.random()*r.loot.length)];
-            if(g>0){ s.gold += g; addLog(s, `${name} success: +${g} gold.`, 'good'); }
-            else { s.resolve = Math.min(s.resolve+1, 8); addLog(s, `${name} success: +1 resolve.`, 'good'); }
-          } else {
-            s.hp -= r.dmg; addLog(s, `${name} backfires: -${r.dmg} HP.`, 'bad');
+    if(sc.threadId==='caravan'){
+      if(sc.stage===0){
+        acts.push({
+          text:'Search for survivors', dc: ez(48), bonus: bonusTorch, bonusDesc:'+5 Light',
+          resolve:(ok,r)=>{ if(ok){ r.inv.bandage++; addLog(r,'You find supplies (+1 bandage).','good'); } else { r.hp--; addLog(r,'Collapsing wagon (-1 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Trail the raiders quietly', dc: med(58), bonus: bonusResolve, bonusDesc:'+Resolve bonus',
+          resolve:(ok,r)=>{ if(ok){ r.flags.add('raider_trail'); addLog(r,'You mark their route.','good'); } else { r.rations--; addLog(r,'You lose time (-1 rations).','bad'); }
           }
-        }
-      };
-    });
+        });
+        acts.push({
+          text:'Signal guards with torch', dc: hard(72), bonus: bonusTorch, bonusDesc:'+5 Light',
+          resolve:(ok,r)=>{ if(ok){ r.gold+=2; addLog(r,'Thanks in coin (+2 gold).','good'); } else { r.hp-=2; addLog(r,'Signal draws arrows (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Rush the verge', dc: wild(85),
+          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Boldness pays (+1 Resolve).','good'); } else { r.hp-=4; addLog(r,'Ambushers strike (-4 HP).','bad'); } }
+        });
+      }
+      if(sc.stage===1){
+        acts.push({
+          text:'Set a counter-ambush', dc: hard(73),
+          resolve:(ok,r)=>{ if(ok){ r.gold+=4; addLog(r,'Loot recovered (+4 gold).','good'); } else { r.hp-=3; addLog(r,'They spot you (-3 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Cut tethers in stealth', dc: med(60),
+          resolve:(ok,r)=>{ if(ok){ r.flags.add('prisoners_freed'); addLog(r,'Several slip away to safety.','good'); } else { r.hp-=2; addLog(r,'Knife slips (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Poison cookpot with herbs', dc: ez(46), bonus: bonusHerbs, bonusDesc:'+8 if Herbs',
+          resolve:(ok,r)=>{ if(ok){ r.inv.herbs=Math.max(0,r.inv.herbs-1); r.resolve++; addLog(r,'Camp goes quiet (+1 Resolve, -1 Herbs).','good'); } else { addLog(r,'Spoil fails.','bad'); } }
+        });
+        acts.push({
+          text:'Challenge the chief', dc: wild(88), bonus: bonusResolve, bonusDesc:'+Resolve bonus',
+          resolve:(ok,r)=>{ if(ok){ r.gold+=6; addLog(r,'Chief yields tribute (+6 gold).','good'); } else { r.hp-=5; addLog(r,'Duel turns ugly (-5 HP).','bad'); } }
+        });
+      }
+      if(sc.stage===2){
+        acts.push({
+          text:'Slip bonds with lockpick', dc: ez(45), bonus: bonusPick, bonusDesc:'+10 Lockpick',
+          resolve:(ok,r)=>{ if(ok){ r.inv.lockpick=Math.max(0,r.inv.lockpick-1); r.flags.add('keyring'); addLog(r,'Keyring acquired (-1 Lockpick).','good'); } else { addLog(r,'Pick bends uselessly.','bad'); }
+          }
+        });
+        acts.push({
+          text:'Distract sentries', dc: med(59),
+          resolve:(ok,r)=>{ if(ok){ r.gold+=2; addLog(r,'You lift purses (+2 gold).','good'); } else { r.hp-=2; addLog(r,'Rock grazes you (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Silent takedowns', dc: hard(74),
+          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Swift and clean (+1 Resolve).','good'); } else { r.hp-=3; addLog(r,'Struggle is loud (-3 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Start a stampede', dc: wild(90),
+          resolve:(ok,r)=>{ if(ok){ r.gold+=5; addLog(r,'Chaos covers your escape (+5 gold).','good'); } else { r.hp-=5; addLog(r,'It tramples you (-5 HP).','bad'); } }
+        });
+      }
+      if(sc.stage===3){
+        acts.push({
+          text:'Walk at the vanguard with torch', dc: ez(48), bonus: bonusTorch, bonusDesc:'+5 Light',
+          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Merchants steady (+1 Resolve).','good'); } else { r.hp--; addLog(r,'A stray arrow (-1 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Cover flanks', dc: med(60),
+          resolve:(ok,r)=>{ if(ok){ r.gold+=3; addLog(r,'Grateful reward (+3 gold).','good'); } else { r.hp-=2; addLog(r,'You take a hit (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Scare raiders with fire', dc: hard(75), bonus: bonusTorch, bonusDesc:'+5 Light',
+          resolve:(ok,r)=>{ if(ok){ r.inv.torch=Math.max(0,r.inv.torch-1); r.gold+=2; addLog(r,'They scatter (+2 gold, -1 torch).','good'); } else { r.hp-=3; addLog(r,'Backfire singes you (-3 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Sprint the convoy through', dc: wild(92),
+          resolve:(ok,r)=>{ if(ok){ r.gold+=7; addLog(r,'Breakthrough! (+7 gold).','good'); } else { r.hp-=5; addLog(r,'Carts overturn (-5 HP).','bad'); } }
+        });
+      }
+    }
+
+    if(sc.threadId==='plague'){
+      if(sc.stage===0){
+        acts.push({
+          text:'Question the healer', dc: ez(47),
+          resolve:(ok,r)=>{ if(ok){ r.inv.herbs++; addLog(r,'You receive herbs (+1 Herbs).','good'); } else { r.resolve = Math.max(3,r.resolve-1); addLog(r,'Rumors unsettle you (-1 Resolve).','bad'); } }
+        });
+        acts.push({
+          text:'Inspect the well with torch', dc: med(58), bonus: bonusTorch, bonusDesc:'+5 Light',
+          resolve:(ok,r)=>{ if(ok){ r.gold+=1; addLog(r,'Coins at the bottom (+1 gold).','good'); } else { r.hp--; addLog(r,'Fumes sting (-1 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Quarantine a hut', dc: hard(72),
+          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Order restored (+1 Resolve).','good'); } else { r.hp-=2; addLog(r,'Pushback injures you (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Drink a sample (why?)', dc: wild(90),
+          resolve:(ok,r)=>{ if(ok){ r.flags.add('weird_tolerance'); addLog(r,'You feel… resistant?','good'); } else { r.hp-=4; addLog(r,'Terrible idea (-4 HP).','bad'); } }
+        });
+      }
+      if(sc.stage===1){
+        acts.push({
+          text:'Enter tannery vents', dc: hard(74), bonus:(r)=> (r.light>0?5:0), bonusDesc:'+5 Light',
+          resolve:(ok,r)=>{ if(ok){ r.flags.add('found_source'); addLog(r,'Source confirmed.','good'); } else { r.hp-=3; addLog(r,'Fumes choke (-3 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Follow waste channels', dc: med(60),
+          resolve:(ok,r)=>{ if(ok){ r.inv.lockpick++; addLog(r,'You find a toolbox (+1 lockpick).','good'); } else { r.hp-=2; addLog(r,'You slip (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Interrogate the foreman', dc: ez(50), bonus: bonusResolve, bonusDesc:'+Resolve bonus',
+          resolve:(ok,r)=>{ if(ok){ r.gold+=2; addLog(r,'A bribe changes hands (+2 gold).','good'); } else { r.resolve=Math.max(3,r.resolve-1); addLog(r,'He stonewalls you (-1 Resolve).','bad'); } }
+        });
+        acts.push({
+          text:'Seal vents with tar', dc: wild(88),
+          resolve:(ok,r)=>{ if(ok){ r.resolve+=2; addLog(r,'Air sweetens (+2 Resolve).','good'); } else { r.hp-=4; addLog(r,'You pass out (-4 HP).','bad'); } }
+        });
+      }
+      if(sc.stage===2){
+        acts.push({
+          text:'Brew tonic (herbs)', dc: med(62), bonus: bonusHerbs, bonusDesc:'+8 Herbs',
+          resolve:(ok,r)=>{ if(ok){ r.inv.herbs=Math.max(0,r.inv.herbs-1); r.flags.add('tonic'); addLog(r,'You bottle a tonic (-1 Herbs).','good'); } else { r.hp-=2; addLog(r,'Batch curdles (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Distill under torchlight', dc: ez(48), bonus: (r)=> r.light>0?5:0, bonusDesc:'+5 Light',
+          resolve:(ok,r)=>{ if(ok){ r.inv.bandage++; addLog(r,'Sterile wraps found (+1 bandage).','good'); } else { r.hp--; addLog(r,'You scorch your hand (-1 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Test on yourself', dc: hard(76),
+          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'It seems to work (+1 Resolve).','good'); } else { r.hp-=3; addLog(r,'Side effects (-3 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Trade formula for gold', dc: wild(92),
+          resolve:(ok,r)=>{ if(ok){ r.gold+=6; addLog(r,'Apothecary pays (+6 gold).','good'); } else { r.hp-=4; addLog(r,'Deal turns sour (-4 HP).','bad'); } }
+        });
+      }
+      if(sc.stage===3){
+        acts.push({
+          text:'Organize a line', dc: ez(46),
+          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Distribution smooth (+1 Resolve).','good'); } else { r.hp--; addLog(r,'A scuffle breaks out (-1 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Guard the cart', dc: med(60),
+          resolve:(ok,r)=>{ if(ok){ r.gold+=3; addLog(r,'Grateful donations (+3 gold).','good'); } else { r.hp-=2; addLog(r,'You are jostled (-2 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Rally the crowd', dc: hard(75), bonus: bonusResolve, bonusDesc:'+Resolve bonus',
+          resolve:(ok,r)=>{ if(ok){ r.flags.add('hero_of_fen'); addLog(r,'Cheers rise—your name spreads.','good'); } else { r.hp-=3; addLog(r,'Bottles fly (-3 HP).','bad'); } }
+        });
+        acts.push({
+          text:'Slip away to rest', dc: wild(88),
+          resolve:(ok,r)=>{ if(ok){ r.rations++; addLog(r,'You find a hot meal (+1 rations).','good'); } else { r.hp-=3; addLog(r,'Exhaustion trips you (-3 HP).','bad'); } }
+        });
+      }
+    }
+
+    return acts;
+  }
+
+  // ---------- Step / Flow ----------
+  function nextScenario(rs){
+    const sc = scenarioFor(rs);
+    rs.scenario = sc;
+    const options = choicesFor(rs, sc);
+    // Always show exactly 4
+    renderChoices(rs, options.slice(0,4));
+  }
+
+  function advanceThread(rs){
+    const t = Threads[rs.thread.id];
+    if(rs.thread.stage < t.stages.length-1){
+      rs.thread.stage++;
+    } else {
+      // Completed arc: grant reward and roll a new random thread
+      rs.gold += 5;
+      addLog(rs,'Arc complete (+5 gold).','good');
+      rs.thread = pickThread();
+    }
   }
 
   function step(){
@@ -349,11 +608,7 @@
     rs.depth += 1;
     if(Math.random()<Math.min(0.45, rs.depth*0.02)){ rs.hp -= 1; addLog(rs,'Fatigue nips at you (-1 HP).','bad'); }
     if(isCampDepth(rs.depth)){ addLog(rs,'You reach a camp. You can retire safely here.'); }
-
-    // New scenario each turn
-    const sc = makeScenario(rs.depth);
-    rs.scenario = sc; pushRecent(sc.id);
-    renderChoices(rs, fourChoicesFor(sc, rs));
+    nextScenario(rs);
     refreshUI();
   }
 
@@ -363,6 +618,7 @@
       state.tombstones.unshift({ runId: rs.runId, depth: rs.depth, gold: rs.gold, time: Date.now() });
       if(state.tombstones.length>50) state.tombstones.pop();
       state.pass=null; state.run=null; persist(); renderTombs(); refreshUI(); return; }
+    advanceThread(rs);
     step();
   }
 
@@ -375,10 +631,10 @@
   }
 
   // ---------- Controls ----------
-  elFaucet.onclick = ()=>{ state.walletMinor += 2000; persist(); updateWallet(); };
-  elWithdraw.onclick = ()=>{ state.walletMinor = Math.max(0, state.walletMinor-500); persist(); updateWallet(); };
+  $('#btnFaucet').onclick = ()=>{ state.walletMinor += 2000; persist(); updateWallet(); };
+  $('#btnWithdraw').onclick = ()=>{ state.walletMinor = Math.max(0, state.walletMinor-500); persist(); updateWallet(); };
 
-  elStart.onclick = ()=>{
+  $('#btnStart').onclick = ()=>{
     if(state.pass || state.run) return;
     const fee = lastFee; if(state.walletMinor < fee){ alert('Insufficient funds for entry fee. Use Add Test Coins.'); return; }
     state.walletMinor -= fee; persist(); updateWallet();
@@ -390,18 +646,22 @@
     lastFee = dynamicEntryFee(); refreshUI();
   };
 
-  elRetire.onclick = ()=>{
+  $('#btnRetire').onclick = ()=>{
     const rs = state.run; if(!rs) return;
     if(!isCampDepth(rs.depth)){ addLog(rs,'You cannot retire here. Find a camp.'); refreshUI(); return; }
-    const payoutMinor = rs.gold*50; // 1 gold = 0.50 FAKE
+    // Settlement: relic shards convert to gold too
+    const relicPayout = (rs.inv.relic||0)*8; rs.inv.relic=0;
+    const payoutMinor = (rs.gold + relicPayout) * 50; // 1 gold = 0.50 FAKE
     state.walletMinor += payoutMinor; persist(); updateWallet();
-    addLog(rs, `You retire with ${rs.gold} gold → ${fmtMinor(payoutMinor)}.`, 'good');
+    addLog(rs, `You retire with ${rs.gold} gold + relics (${relicPayout} gold) → ${fmtMinor(payoutMinor)}.`, 'good');
     rs.alive=false; state.pass=null; state.run=null; refreshUI();
   };
 
   // ---------- Init ----------
-  renderTombs();
-  refreshUI();
+  function initTombs(){ renderTombs(); }
+  initTombs(); refreshUI();
+
 })();
-</script></body>
+</script>
+</body>
 </html>
