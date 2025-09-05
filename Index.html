@@ -3,10 +3,11 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Roguechain — d100 Story Threads (Mobile)</title>
+<title>Roguechain — d100 Long Threads (Mobile)</title>
 <style>
   :root{
-    --bg:#0b0f14;--panel:#0f1620;--panel2:#0d141d;--ink:#e6edf3;--muted:#9aa5b1;--accent:#72a1ff;--good:#42d392;--bad:#ff6b6b;--edge:#1f2a37
+    --bg:#0b0f14;--panel:#0f1620;--panel2:#0d141d;--ink:#e6edf3;--muted:#9aa5b1;--accent:#72a1ff;--good:#42d392;--bad:#ff6b6b;--edge:#1f2a37;
+    --shadow: 0 8px 30px rgba(0,0,0,.45)
   }
   *{box-sizing:border-box}
   html,body{height:100%}
@@ -22,7 +23,7 @@
   button.primary{background:#1b2736;border-color:#315a9f}
   main{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}
   @media (max-width:860px){main{grid-template-columns:1fr}}
-  .card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:12px}
+  .card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:12px;box-shadow:var(--shadow)}
   h2{margin:0 0 8px;font-size:18px}
   .stats{display:grid;grid-template-columns:repeat(3,1fr);gap:8px;margin:8px 0}
   @media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}}
@@ -31,8 +32,7 @@
   .choices button{width:100%;text-align:left;display:flex;justify-content:space-between;align-items:center;gap:10px}
   .choices .req{opacity:.8;font-size:12px}
   .log{max-height:300px;overflow:auto;background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px;font:13px/1.5 ui-monospace,Consolas,Menlo,monospace}
-  .log .good{color:var(--good)}
-  .log .bad{color:var(--bad)}
+  .log .good{color:var(--good)} .log .bad{color:var(--bad)}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .hint{color:var(--muted);font-size:12px}
   .divider{height:1px;background:var(--edge);margin:8px 0}
@@ -45,19 +45,26 @@
   .scenario p{margin:0;color:#c8d0d8}
   .tag{display:inline-block;background:#1a2432;border:1px solid #2a3a52;border-radius:999px;padding:3px 8px;margin-right:6px;font-size:11px;color:#9fb4d6}
 
-  /* d100 die */
-  .die{width:88px;height:88px;border-radius:14px;background:radial-gradient(60% 60% at 50% 45%,#1a2432 0%,#0f1620 100%);border:2px solid var(--edge);
-       display:flex;align-items:center;justify-content:center;font:700 22px/1 ui-monospace,Consolas;color:#b8d3ff;position:relative;user-select:none}
+  /* d100 die + modal */
+  .die{width:100px;height:100px;border-radius:14px;background:radial-gradient(60% 60% at 50% 45%,#1a2432 0%,#0f1620 100%);border:2px solid var(--edge);
+       display:flex;align-items:center;justify-content:center;font:800 26px/1 ui-monospace,Consolas;color:#b8d3ff;position:relative;user-select:none}
   .die .label{position:absolute;bottom:4px;left:6px;font:10px/1.2 ui-monospace;color:var(--muted)}
   .die.rolling{animation:shake .9s ease-in-out}
   @keyframes shake{0%{transform:rotate(0)}25%{transform:rotate(6deg)}50%{transform:rotate(-6deg)}75%{transform:rotate(3deg)}100%{transform:rotate(0)}}
-  .check{background:var(--panel2);border:1px dashed var(--edge);border-radius:12px;padding:10px}
+
+  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px}
+  .modal.show{display:flex}
+  .modal .sheet{max-width:520px;width:100%;background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+  .modal h3{margin:0 0 6px;font-size:18px}
+  .modal .sub{color:var(--muted);font-size:13px;margin-bottom:8px}
+  .modal .result{margin-top:10px;font-weight:700}
+  .result.success{color:var(--good)} .result.fail{color:var(--bad)}
 </style>
 </head>
 <body>
   <div class="wrap">
     <header>
-      <div class="brand">Roguechain — d100 Story Threads</div>
+      <div class="brand">Roguechain — d100 Long Threads</div>
       <div class="wallet">
         <div class="pill" id="balance">Balance: 0.00 FAKE</div>
         <button id="btnFaucet">Add Test Coins</button>
@@ -106,25 +113,16 @@
         <div class="choices" id="choices"></div>
 
         <div class="divider"></div>
-        <div class="check" id="checkBox" style="display:none">
-          <div id="checkText" class="hint">—</div>
-          <div class="row">
-            <div class="die" id="d100" role="button" aria-label="Roll d100"><span class="value">d100</span><span class="label">d100</span></div>
-          </div>
-          <div class="hint">Tap to roll. Succeed if your roll meets or beats the DC (after any item bonuses).</div>
-        </div>
-
-        <div class="divider"></div>
         <div class="log" id="log"></div>
       </section>
 
       <aside class="card">
         <h2>How it works</h2>
         <ul class="muted">
-          <li>Runs follow a **story thread** (Vault / Caravan / Plague) that advances by stage.</li>
-          <li>Every turn shows a new **coherent scenario** with **4 options** (varied DCs).</li>
-          <li>All checks use a single **d100** roll; item bonuses can help.</li>
-          <li>Camps every 4 depths let you **Retire**; permadeath and tombstones apply.</li>
+          <li>Each run follows a **coherent thread** (3 arcs), each with **20 stages**.</li>
+          <li>Every turn presents a fresh scenario with **4 options** and varied DCs.</li>
+          <li>After choosing, a **dice window** opens to roll **d100** and shows the outcome.</li>
+          <li>Camps every 4 depths let you retire; permadeath & tombstones apply.</li>
         </ul>
         <div class="divider"></div>
         <h2>Tombstones</h2>
@@ -135,13 +133,33 @@
     <p class="hint" style="margin-top:10px">Saves to localStorage. Token: <b>FAKE</b>.</p>
   </div>
 
+  <!-- Dice Modal -->
+  <div class="modal" id="diceModal" aria-modal="true" role="dialog">
+    <div class="sheet">
+      <h3 id="mTitle">—</h3>
+      <div class="sub" id="mSubtitle">—</div>
+      <div class="row" style="align-items:center;gap:14px">
+        <div class="die" id="mDie" role="button" aria-label="Roll d100"><span class="value">d100</span><span class="label">d100</span></div>
+        <div>
+          <div id="mDC" class="hint">—</div>
+          <div id="mBonus" class="hint">—</div>
+        </div>
+      </div>
+      <div class="result" id="mResult" style="display:none">—</div>
+      <div class="row" style="margin-top:12px;justify-content:flex-end">
+        <button id="mClose" style="display:none">Continue</button>
+        <button id="mCancel">Cancel</button>
+      </div>
+    </div>
+  </div>
+
 <script>
 (function(){
   // ---------- Helpers & Storage ----------
   const $ = sel => document.querySelector(sel);
   const fmtMinor = (m) => `${(m/100).toFixed(2)} FAKE`;
   const store = {
-    key: 'rc-web-d100-threads-v1',
+    key: 'rc-web-d100-long-v1',
     load(){ try{ return JSON.parse(localStorage.getItem(this.key)||'{}'); }catch(_){ return {}; } },
     save(obj){ localStorage.setItem(this.key, JSON.stringify(obj)); }
   };
@@ -153,7 +171,7 @@
     pass: null,
     run: null,        // {hp,resolve,light,rations,gold,depth,alive,flags:Set,inv:{},thread:{id,stage}}
     tombstones: [],
-    pendingCheck: null // { text, dc, bonus, resolve(success, run) }
+    pendingCheck: null // { text, dc, bonus, bonusDesc, resolve(success, run) }
   };
   Object.assign(state, store.load());
   if(!Array.isArray(state.tombstones)) state.tombstones = [];
@@ -172,59 +190,127 @@
   function isCampDepth(d){ return d>0 && d%4===0; }
   function addLog(rs, msg, cls){ rs.log.push(`<span class="${cls||''}">${msg}</span>`); }
 
-  // ---------- Threads (coherent arcs) ----------
-  const Threads = {
-    vault: {
-      name: 'Ancient Vault',
-      stages: [
-        { key:'trail',    t:'Following the Map',  d:(rs)=>`An old map points to a vault in the ${pick(['hills','bog','canyon'])}. You must find the entrance before rivals do.`, tags:['Vault','Trail'] },
-        { key:'threshold',t:'Sealed Threshold',   d:(rs)=>`You find a stone door veined with sigils. Getting inside will take care—or force.`, tags:['Vault','Ward'] },
-        { key:'hazards',  t:'Hall of Hazards',    d:(rs)=>`A corridor of plates, darts, and chutes. The treasure must be near.`, tags:['Vault','Traps'] },
-        { key:'chamber',  t:'The Inner Chamber',  d:(rs)=>`At last: a plinth cradles a relic shard, watched by silent statues.`, tags:['Vault','Relic'] },
-      ]
-    },
-    caravan: {
-      name: 'Caravan Rescue',
-      stages: [
-        { key:'scout',    t:'Smoke on the Road',  d:()=>`A trade caravan smolders ahead; raiders still prowl the verge. Survivors may be hiding.`, tags:['Road','Raiders'] },
-        { key:'ambush',   t:'Counter-Ambush',     d:()=>`Tracks lead to a ravine camp. You could strike now—or shadow them.`, tags:['Ravine','Ambush'] },
-        { key:'release',  t:'Bound Prisoners',    d:()=>`Captives are guarded near the fire. A clean rescue will be tricky.`, tags:['Rescue','Stealth'] },
-        { key:'escort',   t:'Escort to Safety',   d:()=>`Marshalling the shaken merchants, you must escort them through nightfall.`, tags:['Escort','Night'] },
-      ]
-    },
-    plague: {
-      name: 'Plague in the Fen',
-      stages: [
-        { key:'rumors',   t:'Sickly Village',     d:()=>`In the reed-choked fen, a village coughs. A pall hangs over the well.`, tags:['Fen','Sickness'] },
-        { key:'source',   t:'Find the Source',    d:()=>`Symptoms point to the old tannery. Fumes curl from its vents.`, tags:['Tannery','Miasma'] },
-        { key:'formula',  t:'Brew a Remedy',      d:()=>`With herbs and tinctures you might brew a cure—if you get the ratios right.`, tags:['Herbs','Alchemy'] },
-        { key:'deliver',  t:'Distribute Aid',     d:()=>`Pale faces crowd your cart. Keep order as you deliver the tonic.`, tags:['Relief','Crowd'] },
-      ]
-    }
-  };
+  // ---------- Threads (coherent arcs) with 20 stages each ----------
   function pick(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+
+  function vaultStages(){
+    // Act I: Approach (1-5), Act II: Entry (6-10), Act III: Depths (11-16), Act IV: Heart (17-20)
+    return [
+      {t:'Old Map & Distant Spurs',        d:()=>`An inked map leads you across ${pick(['stony spurs','wind-cut mesas','lichen hills'])}. Find the first waystone.` ,tags:['Vault','Trail']},
+      {t:'Echoing Gulch',                  d:()=>`A gulch funnels sound; rivals might hear you. Skirt the rim or risk the floor.` ,tags:['Vault','Gulch']},
+      {t:'Fallen Menhirs',                 d:()=>`Toppled stones hint at an approach. Pressure marks suggest old mechanisms.` ,tags:['Vault','Menhirs']},
+      {t:'Thorned Cut',                    d:()=>`A short cut crawls with thorns. Light is fading.` ,tags:['Vault','Thicket']},
+      {t:'Overwatch Ridge',                d:()=>`From a ridge you glimpse a stone face half-buried. The door can’t be far.` ,tags:['Vault','Survey']},
+
+      {t:'The Sealed Door',                d:()=>`Sigils web the door. A grate whistles nearby. Entry demands craft—or force.` ,tags:['Vault','Ward']},
+      {t:'Breather Shafts',                d:()=>`Warm air sighs from vents. You might squeeze through, if careful.` ,tags:['Vault','Vent']},
+      {t:'Whispering Statues',             d:()=>`Hooded statues line the approach with hollow eyes.` ,tags:['Vault','Guardians']},
+      {t:'Rust-locked Wedges',              d:()=>`Iron wedges jam a service hatch. Tools would help.` ,tags:['Vault','Hatch']},
+      {t:'First Descent',                  d:()=>`Steps plunge into stale dark. The air tastes of copper.` ,tags:['Vault','Stairs']},
+
+      {t:'Hall of Plates',                 d:()=>`Floor plates rest uneven. Some crackle faintly.` ,tags:['Vault','Trap']},
+      {t:'Dart Gallery',                   d:()=>`Pitted walls at shoulder height give you pause.` ,tags:['Vault','Trap']},
+      {t:'Mirror Antechamber',             d:()=>`Mirrors distort depth. Light might reveal seams.` ,tags:['Vault','Puzzle']},
+      {t:'Weeping Ceiling',                d:()=>`Moisture drips. The stone groans; watch for sinkholes.` ,tags:['Vault','Hazard']},
+      {t:'Backdoor Chute',                 d:()=>`A narrow chute drops into darkness—fast but risky.` ,tags:['Vault','Shortcut']},
+      {t:'Glyph-lock',                     d:()=>`A plinth bears a glyph-lock. Wrong sequence will bite.` ,tags:['Vault','Lock']},
+
+      {t:'Antechamber of Echoes',          d:()=>`Footfalls return too quickly. Hidden hollows surround you.` ,tags:['Vault','Echo']},
+      {t:'The Relic’s Guard',              d:()=>`Statues frame a dais. A shard hums like a bee-hive.` ,tags:['Vault','Relic']},
+      {t:'Counterweight Riddle',           d:()=>`Sandbags lie rotted. The mechanism still ticks somewhere.` ,tags:['Vault','Mechanism']},
+      {t:'Break or Bypass',                d:()=>`One last test: seize the shard or trick the guardians.` ,tags:['Vault','Decision']},
+    ];
+  }
+
+  function caravanStages(){
+    return [
+      {t:'Smoke on the Road',              d:()=>`A caravan smolders; raiders lurk. Survivors may hide nearby.`, tags:['Road','Raiders']},
+      {t:'Broken Axles',                   d:()=>`Axles and crates lie scattered. Tracks veer toward a ravine.`, tags:['Ravine','Tracks']},
+      {t:'Scout the Verge',                d:()=>`Scrub offers cover. A signal could draw attention—good or bad.`, tags:['Signal','Scrub']},
+      {t:'Night Watch',                    d:()=>`Coyotes yip. Torches bob in the distance.`, tags:['Night','Watch']},
+      {t:'Trail the Raiders',              d:()=>`Footprints thicken to a path. A camp can’t be far.`, tags:['Trail','Raiders']},
+
+      {t:'Ravine Overlook',                d:()=>`Below, raiders dine. You note sentry routes.`, tags:['Overlook','Ambush']},
+      {t:'Sabotage the Tethers',           d:()=>`Pack animals are tethered near a cart.`, tags:['Sabotage','Animals']},
+      {t:'Poison the Pot',                 d:()=>`A cookpot bubbles unattended. Herbs might tilt odds.`, tags:['Herbs','Poison']},
+      {t:'Free the Prisoners',             d:()=>`Bound merchants huddle. Keys jingle at a post.`, tags:['Rescue','Keys']},
+      {t:'Stampede Diversion',             d:()=>`A well-timed fright could scatter the camp.`, tags:['Diversion','Chaos']},
+
+      {t:'Regroup in the Dunes',           d:()=>`Survivors straggle. You need a route home.`, tags:['Regroup','Dunes']},
+      {t:'Broker Safe Passage',            d:()=>`Locals demand payment or protection.`, tags:['Truce','Toll']},
+      {t:'Bridge of Ropes',                d:()=>`A rope bridge sways over a gorge.`, tags:['Bridge','Risk']},
+      {t:'Shadow Pursuit',                 d:()=>`Hoofbeats behind—raiders give chase.`, tags:['Pursuit','Chase']},
+      {t:'River Ford',                     d:()=>`A ford foams white. Carts creak.`, tags:['River','Ford']},
+      {t:'Rain & Mud',                      d:()=>`Storms churn the road to mire.`, tags:['Weather','Mud']},
+
+      {t:'Town Gates',                     d:()=>`Lanterns glow at the walls; guards eye the convoy.`, tags:['Town','Gate']},
+      {t:'Reclaim the Wares',              d:()=>`Owners bicker over what’s left.`, tags:['Claim','Wares']},
+      {t:'Guard the Market',               d:()=>`Rumors draw thieves; one last watch.`, tags:['Market','Guard']},
+      {t:'Honor Paid',                     d:()=>`The caravan survives; rewards await.`, tags:['Honor','Reward']},
+    ];
+  }
+
+  function plagueStages(){
+    return [
+      {t:'Sickly Village',                 d:()=>`Coughs echo; an ill wind blows from the well.`, tags:['Fen','Village']},
+      {t:'Symptoms & Rumors',              d:()=>`Stories point to the tannery; contradictions abound.`, tags:['Rumor','Leads']},
+      {t:'Quarantine Tents',               d:()=>`A green tent city stinks of poultice.`, tags:['Quarantine','Order']},
+      {t:'Herb-Gathering',                 d:()=>`Herbs dot the marsh; you know some, others you guess.`, tags:['Herbs','Marsh']},
+      {t:'Well Inspection',                d:()=>`A rope creaks; coins glint below.`, tags:['Well','Inspect']},
+
+      {t:'Tannery Vents',                  d:()=>`Sweet fumes coil from vents.`, tags:['Tannery','Vents']},
+      {t:'Waste Channels',                 d:()=>`Slime trails toward the river.`, tags:['Waste','Slime']},
+      {t:'Foreman’s Ledger',               d:()=>`A ledger lists shipments and strange symbols.`, tags:['Ledger','Clue']},
+      {t:'Find the Source',                d:()=>`Barrels leak froth under canvas.`, tags:['Source','Barrels']},
+      {t:'Seal the Vats',                  d:()=>`Hot tar and planks might stifle fumes.`, tags:['Seal','Tar']},
+
+      {t:'Brewroom Setup',                 d:()=>`Alembics rattle; ratios matter.`, tags:['Brew','Ratios']},
+      {t:'Torchlit Distillation',          d:()=>`Steady heat wins the day—if you avoid flare-ups.`, tags:['Torch','Heat']},
+      {t:'Test Doses',                     d:()=>`Volunteers line up; ethics blur.`, tags:['Test','Dose']},
+      {t:'Triage',                          d:()=>`Who gets medicine first?`, tags:['Triage','Crowd']},
+      {t:'Supply Run',                     d:()=>`Masks, water, and wraps run low.`, tags:['Supply','Risk']},
+      {t:'Backlash',                        d:()=>`Accusations fly; fear needs calming.`, tags:['Backlash','Fear']},
+
+      {t:'Relief Routes',                  d:()=>`You chart door-to-door aid.`, tags:['Relief','Route']},
+      {t:'Crowd Control',                  d:()=>`A crush at the square—hold the line.`, tags:['Crowd','Order']},
+      {t:'Clean Water Plan',               d:()=>`Rig filters and boil sites.`, tags:['Water','Plan']},
+      {t:'Plague Eases',                   d:()=>`Numbers drop; gratitude rises.`, tags:['Relief','Thanks']},
+    ];
+  }
+
+  const Threads = {
+    vault:   { name:'Ancient Vault',   stages: vaultStages() },
+    caravan: { name:'Caravan Rescue',  stages: caravanStages() },
+    plague:  { name:'Plague in the Fen', stages: plagueStages() }
+  };
   function pickThread(){
     const id = pick(['vault','caravan','plague']);
     return { id, stage:0 };
   }
 
-  // ---------- UI Elements ----------
+  // ---------- Elements ----------
   const elBal = $('#balance'), elEntry = $('#entryFee'), elPass = $('#pass'),
         elStart = $('#btnStart'), elFaucet = $('#btnFaucet'), elWithdraw = $('#btnWithdraw'),
         elRetire = $('#btnRetire'), elCampRow = $('#campRow'), elChoices = $('#choices'),
         elLog = $('#log'), elTombs = $('#tombstones'),
         sHP=$('#sHP'), sRV=$('#sRV'), sL=$('#sL'), sR=$('#sR'), sG=$('#sG'), sD=$('#sD'),
         scBox = $('#scenarioBox'), scTitle=$('#scTitle'), scText=$('#scText'), scTags=$('#scTags'),
-        checkBox=$('#checkBox'), checkText=$('#checkText'), dieEl=$('#d100'),
         invRow=$('#invRow'), invText=$('#invText'), btnBandage=$('#btnUseBandage'), btnTorch=$('#btnUseTorch');
+
+  // Modal
+  const modal = $('#diceModal'), mTitle=$('#mTitle'), mSubtitle=$('#mSubtitle'),
+        mDie=$('#mDie'), mVal=()=>mDie.querySelector('.value'), mDC=$('#mDC'), mBonus=$('#mBonus'),
+        mResult=$('#mResult'), mClose=$('#mClose'), mCancel=$('#mCancel');
+
+  function openModal(){ modal.classList.add('show'); mResult.style.display='none'; mClose.style.display='none'; }
+  function closeModal(){ modal.classList.remove('show'); }
 
   function dynamicEntryFee(){ const jitter = Math.floor(Math.random()*50); return Math.max(100, state.entryFeeMinorBase + jitter); }
   let lastFee = dynamicEntryFee();
   function updateWallet(){ elBal.textContent = `Balance: ${fmtMinor(state.walletMinor)}`; }
 
   function invString(inv){
-    const parts = [];
-    for (const [k,v] of Object.entries(inv)) if(v>0) parts.push(`${k}×${v}`);
+    const parts = []; for (const [k,v] of Object.entries(inv)) if(v>0) parts.push(`${k}×${v}`);
     return parts.length? parts.join(', ') : '—';
   }
 
@@ -235,16 +321,14 @@
 
     if(!state.run){
       [sHP,sRV,sL,sR,sG,sD].forEach(x=>x.textContent='—');
-      elLog.innerHTML=''; elChoices.innerHTML=''; elCampRow.style.display='none'; checkBox.style.display='none'; scBox.style.display='none';
+      elLog.innerHTML=''; elChoices.innerHTML=''; elCampRow.style.display='none'; scBox.style.display='none';
       invRow.style.display='none'; btnBandage.style.display='none'; btnTorch.style.display='none';
-      dieEl.querySelector('.value').textContent='d100';
       return;
     }
     const rs = state.run;
     sHP.textContent = rs.hp; sRV.textContent=rs.resolve; sL.textContent=rs.light; sR.textContent=rs.rations; sG.textContent=rs.gold; sD.textContent=rs.depth;
     elLog.innerHTML = rs.log.slice(-200).map(x=>`• ${x}`).join('<br>');
     elCampRow.style.display = (isCampDepth(rs.depth) && rs.alive) ? 'flex':'none';
-    checkBox.style.display = state.pendingCheck ? 'block' : 'none';
 
     invRow.style.display='flex';
     invText.textContent = `Items: ${invString(rs.inv)}`;
@@ -259,335 +343,164 @@
     } else scBox.style.display='none';
   }
 
-  // ---------- Inventory use ----------
-  function useBandage(){
-    const rs = state.run; if(!rs || rs.inv.bandage<=0 || !rs.alive) return;
-    rs.inv.bandage--; rs.hp = Math.min(rs.hp+2, 12);
-    addLog(rs,'You use a bandage (+2 HP).','good'); refreshUI();
-  }
-  function useTorch(){
-    const rs = state.run; if(!rs || rs.inv.torch<=0 || !rs.alive) return;
-    rs.inv.torch--; rs.light += 1;
-    addLog(rs,'You light a torch (+1 Light).','good'); refreshUI();
-  }
-  btnBandage.onclick = useBandage;
-  btnTorch.onclick = useTorch;
+  // Inventory use
+  btnBandage.onclick = ()=>{ const r=state.run; if(!r||r.inv.bandage<=0||!r.alive) return; r.inv.bandage--; r.hp=Math.min(r.hp+2,12); addLog(r,'You use a bandage (+2 HP).','good'); refreshUI(); };
+  btnTorch.onclick   = ()=>{ const r=state.run; if(!r||r.inv.torch<=0||!r.alive) return; r.inv.torch--; r.light+=1; addLog(r,'You light a torch (+1 Light).','good'); refreshUI(); };
 
-  // ---------- Choices & Checks ----------
+  // ---------- Scenario + Choices ----------
+  function scenarioFor(rs){
+    const t = Threads[rs.thread.id]; const st = Math.min(rs.thread.stage, t.stages.length-1);
+    const node = t.stages[st];
+    return { title:`${t.name} — ${node.t}`, text: node.d(rs), tags:[t.name, `Stage ${st+1}`].concat(node.tags||[]), threadId: rs.thread.id, stage: st };
+  }
+
+  // DC helpers per stage + scaling
+  const EZ   = (base,rs)=> Math.max(30, base + Math.floor(rs.depth/3) - 5);
+  const MED  = (base,rs)=> Math.min(80, base + Math.floor(rs.depth/2));
+  const HARD = (base,rs)=> Math.min(95, base + Math.floor(rs.depth*0.8));
+  const WILD = (base,rs)=> Math.min(99, base + rs.depth);
+
+  // Bonuses from context/items
+  const bonusTorch   = (r)=> r.light>0 ? 5 : 0;
+  const bonusResolve = (r)=> Math.max(0, r.resolve-5);
+  const bonusPick    = (r)=> r.inv.lockpick>0 ? 10 : 0;
+  const bonusHerbs   = (r)=> r.inv.herbs>0 ? 8 : 0;
+
+  function choicesFor(rs, sc){
+    // 4 options vary by stage: safe / tactical / risky / wild
+    const acts = [];
+    const base = 50; // starting reference, then adjusted
+    const depthBump = Math.min(10, Math.floor(rs.depth/4));
+    const easy  = EZ(base - 5 - depthBump, rs);
+    const mid   = MED(base + 5, rs);
+    const hard  = HARD(base + 15, rs);
+    const wild  = WILD(base + 25, rs);
+
+    // Thread-specific text + effects (lightweight, varied, coherent)
+    const push = (text, dc, bonus, bonusDesc, on) => acts.push({ text, dc, bonus, bonusDesc, resolve:on });
+
+    if(sc.threadId==='vault'){
+      switch(sc.stage%5){
+        case 0:
+          push('Survey and mark safe ground', easy, bonusTorch, '+5 Light', (ok,r)=> ok ? (r.resolve++, addLog(r,'Calm planning pays (+1 Resolve).','good')) : (r.hp--, addLog(r,'Hidden edge cuts (-1 HP).','bad')));
+          push('Tail rival footprints', mid, bonusResolve, '+Resolve bonus', (ok,r)=> ok ? (r.gold+=2, addLog(r,'Find a dropped purse (+2 gold).','good')) : (r.rations=Math.max(0,r.rations-1), addLog(r,'Lose time and food (-1 rations).','bad')));
+          push('Force a faster route', hard, null, '', (ok,r)=> ok ? (r.light++, addLog(r,'Beat nightfall (+1 Light).','good')) : (r.hp-=2, addLog(r,'Twisted ankle (-2 HP).','bad')));
+          push('Carve a new shortcut', wild, null, '', (ok,r)=> ok ? (r.inv.torch++, addLog(r,'Find resinous wood (+1 torch).','good')) : (r.hp-=3, addLog(r,'Scree slide (-3 HP).','bad')));
+          break;
+        case 1:
+          push('Study sigils for weaknesses', mid, bonusTorch, '+5 Light', (ok,r)=> ok ? (r.flags.add('ward_softened'), addLog(r,'Ward weak points mapped.','good')) : (r.hp-=2, addLog(r,'Arc shock (-2 HP).','bad')));
+          push('Pick the side grate', easy, bonusPick, '+10 Lockpick', (ok,r)=> ok ? (r.inv.lockpick=Math.max(0,r.inv.lockpick-1), r.light++, addLog(r,'Grate yields (+1 Light, -1 lockpick).','good')) : (r.inv.lockpick=Math.max(0,r.inv.lockpick-1), addLog(r,'Pick snaps.','bad')));
+          push('Lever the door', hard, null, '', (ok,r)=> ok ? (r.gold+=3, addLog(r,'Cache exposed (+3 gold).','good')) : (r.hp-=3, addLog(r,'Lever kickback (-3 HP).','bad')));
+          push('Intimidate the statues', wild, bonusResolve, '+Resolve bonus', (ok,r)=> ok ? (r.flags.add('statues_wary'), addLog(r,'Stone regards you warily.','good')) : (r.hp-=4, addLog(r,'Stone animus (-4 HP).','bad')));
+          break;
+        case 2:
+          push('Probe plates with pole & light', easy, (r)=>bonusTorch(r)+2, '+5 Light, +2 tool', (ok,r)=> ok ? (r.inv.torch=Math.max(0,r.inv.torch-1), r.rations++, addLog(r,'Safe path (+1 rations, -1 torch).','good')) : (r.hp--, addLog(r,'Soot cough (-1 HP).','bad')));
+          push('Shadow-step the darts', mid, null, '', (ok,r)=> ok ? (r.resolve++, addLog(r,'You move like water (+1 Resolve).','good')) : (r.hp-=2, addLog(r,'Dart graze (-2 HP).','bad')));
+          push('Sprint the gauntlet', hard, null, '', (ok,r)=> ok ? (r.gold+=2, addLog(r,'Quick haul (+2 gold).','good')) : (r.hp-=3, addLog(r,'Panel collapse (-3 HP).','bad')));
+          push('Drop through the chute', wild, null, '', (ok,r)=> ok ? (r.flags.add('backdoor'), addLog(r,'Back passage found!','good')) : (r.hp-=4, addLog(r,'Hard tumble (-4 HP).','bad')));
+          break;
+        case 3:
+          push('Decode glyph-lock', mid, bonusResolve, '+Resolve bonus', (ok,r)=> ok ? (r.gold+=3, addLog(r,'Mechanism hums (+3 gold).','good')) : (r.hp-=2, addLog(r,'Glyph bite (-2 HP).','bad')));
+          push('Use sandbag counterweight', easy, null, '', (ok,r)=> ok ? (r.resolve++, addLog(r,'Tension equalized (+1 Resolve).','good')) : (r.hp--, addLog(r,'Rope lash (-1 HP).','bad')));
+          push('Bypass with backdoor', hard, null, '', (ok,r)=> ok ? (r.light++, addLog(r,'Shortcut saves time (+1 Light).','good')) : (r.hp-=3, addLog(r,'Dead end bruise (-3 HP).','bad')));
+          push('Risk guardian glare', wild, null, '', (ok,r)=> ok ? (r.gold+=4, addLog(r,'They hold still (+4 gold).','good')) : (r.hp-=5, addLog(r,'They move (-5 HP).','bad')));
+          break;
+        case 4:
+          push('Lift relic with tongs', mid, null, '', (ok,r)=> ok ? (r.inv.relic++, addLog(r,'Relic shard claimed (+1 relic).','good')) : (r.hp-=2, addLog(r,'Runes nip (-2 HP).','bad')));
+          push('Swap with decoy weight', hard, null, '', (ok,r)=> ok ? (r.gold+=6, addLog(r,'Perfect trade (+6 gold).','good')) : (r.hp-=3, addLog(r,'Pedestal jerk (-3 HP).','bad')));
+          push('Appease with light', easy, bonusTorch, '+5 Light', (ok,r)=> ok ? (r.resolve++, addLog(r,'Glares soften (+1 Resolve).','good')) : (r.hp--, addLog(r,'Shadows press (-1 HP).','bad')));
+          push('Grab & dash', wild, null, '', (ok,r)=> ok ? (r.inv.relic++, r.gold+=4, addLog(r,'Snatch & sprint (+1 relic, +4 gold).','good')) : (r.hp-=5, addLog(r,'Statues animate (-5 HP).','bad')));
+          break;
+      }
+    } else if(sc.threadId==='caravan'){
+      push('Search for survivors', easy, bonusTorch, '+5 Light', (ok,r)=> ok ? (r.inv.bandage++, addLog(r,'You find supplies (+1 bandage).','good')) : (r.hp--, addLog(r,'Collapsing wagon (-1 HP).','bad')));
+      push('Trail raiders quietly', mid, bonusResolve, '+Resolve bonus', (ok,r)=> ok ? (r.flags.add('raider_trail'), addLog(r,'You mark their route.','good')) : (r.rations=Math.max(0,r.rations-1), addLog(r,'Lose time (-1 rations).','bad')));
+      push('Set a counter-ambush', hard, null, '', (ok,r)=> ok ? (r.gold+=4, addLog(r,'Loot reclaimed (+4 gold).','good')) : (r.hp-=3, addLog(r,'They spot you (-3 HP).','bad')));
+      push('Stampede diversion', wild, null, '', (ok,r)=> ok ? (r.resolve++, addLog(r,'Chaos favors you (+1 Resolve).','good')) : (r.hp-=4, addLog(r,'It tramples you (-4 HP).','bad')));
+    } else { // plague
+      push('Question the healer', easy, null, '', (ok,r)=> ok ? (r.inv.herbs++, addLog(r,'Herbs acquired (+1 Herbs).','good')) : (r.resolve=Math.max(3,r.resolve-1), addLog(r,'Fears grow (-1 Resolve).','bad')));
+      push('Inspect vents with torch', mid, bonusTorch, '+5 Light', (ok,r)=> ok ? (r.flags.add('found_source'), addLog(r,'Source located.','good')) : (r.hp-=2, addLog(r,'Fumes sting (-2 HP).','bad')));
+      push('Brew a tonic', hard, bonusHerbs, '+8 Herbs', (ok,r)=> ok ? (r.inv.herbs=Math.max(0,r.inv.herbs-1), r.flags.add('tonic'), addLog(r,'A tonic is bottled (-1 Herbs).','good')) : (r.hp-=2, addLog(r,'Batch curdles (-2 HP).','bad')));
+      push('Rally the crowd', wild, bonusResolve, '+Resolve bonus', (ok,r)=> ok ? (r.flags.add('hero_of_fen'), addLog(r,'Cheers rise—order restored.','good')) : (r.hp-=3, addLog(r,'Bottles fly (-3 HP).','bad')));
+    }
+    return acts;
+  }
+
   function renderChoices(rs, choices){
     elChoices.innerHTML='';
     choices.forEach(c=>{
       const btn=document.createElement('button');
-      const req=document.createElement('span'); req.className='req'; req.textContent=`DC ${c.dc}${c.bonusDesc?` (${c.bonusDesc})`:''}`;
+      const req=document.createElement('span'); req.className='req';
+      const bonusPreview = c.bonusDesc ? ` · ${c.bonusDesc}` : '';
+      req.textContent=`DC ${c.dc}${bonusPreview}`;
       btn.appendChild(document.createTextNode(c.text));
       btn.appendChild(req);
-      btn.onclick=()=>{ armCheck(c); };
+      btn.onclick=()=> openDiceFor(c);
       elChoices.appendChild(btn);
     });
   }
-  function armCheck(check){
-    state.pendingCheck = check; // { text, dc, bonus(run), bonusDesc, resolve }
+
+  // ---------- Dice modal flow ----------
+  function openDiceFor(check){
     const rs = state.run;
+    state.pendingCheck = check;
     const bonus = check.bonus? check.bonus(rs) : 0;
-    checkText.textContent = `Check: ${check.text} — DC ${check.dc}${bonus?` (bonus +${bonus})`:''}`;
-    Array.from(elChoices.querySelectorAll('button')).forEach(b=>b.disabled=true);
-    refreshUI();
+    mTitle.textContent = 'Resolve Action';
+    mSubtitle.textContent = check.text;
+    mDC.textContent = `Difficulty: DC ${check.dc}`;
+    mBonus.textContent = bonus ? `Bonus: +${bonus}` : 'Bonus: —';
+    mVal().textContent = 'd100';
+    mResult.style.display='none';
+    mClose.style.display='none';
+    openModal();
   }
+
   function animateRoll(done){
-    const valEl = dieEl.querySelector('.value');
-    dieEl.classList.add('rolling');
+    mDie.classList.add('rolling');
     let t=0; const dur=900; const step=60;
     const tick = ()=>{
-      t+=step; valEl.textContent = (1+Math.floor(Math.random()*100)).toString().padStart(2,'0');
+      t+=step; mVal().textContent = (1+Math.floor(Math.random()*100)).toString().padStart(2,'0');
       if(t>=dur){
         const final = 1+Math.floor(Math.random()*100);
-        valEl.textContent = final.toString().padStart(2,'0');
-        dieEl.classList.remove('rolling');
+        mVal().textContent = final.toString().padStart(2,'0');
+        mDie.classList.remove('rolling');
         done(final);
       } else setTimeout(tick, step);
     };
     tick();
   }
-  dieEl.addEventListener('click', ()=>{
+
+  mDie.addEventListener('click', ()=>{
     const rs = state.run; if(!rs || !rs.alive) return;
     const chk = state.pendingCheck; if(!chk) return;
+    // Prevent multiple rolls
+    if(mDie.classList.contains('rolling')) return;
     animateRoll((roll)=>{
       const bonus = chk.bonus? chk.bonus(rs):0;
       const total = roll + bonus;
       const success = total >= chk.dc;
-      addLog(rs, `Rolled ${roll}${bonus?` + ${bonus}`:''} = ${total} vs DC ${chk.dc}: ${success?'Success':'Fail'}.`, success?'good':'bad');
+      // Show outcome in modal
+      mResult.className = 'result ' + (success?'success':'fail');
+      mResult.textContent = `${success?'Success':'Fail'} — roll ${roll}${bonus?` + ${bonus}`:''} = ${total} vs DC ${chk.dc}`;
+      mResult.style.display='block';
+      mClose.style.display='inline-flex';
+
+      // Apply effects
       chk.resolve(success, rs);
+      addLog(rs, `Action: ${chk.text}. ${success?'Success':'Fail'} (${roll}${bonus?`+${bonus}`:''}=${total} vs ${chk.dc}).`, success?'good':'bad');
       state.pendingCheck = null;
-      Array.from(elChoices.querySelectorAll('button')).forEach(b=>b.disabled=false);
       refreshUI();
-      afterPick();
     });
   });
 
-  // ---------- Scenario builders per thread (with varying DCs & item bonuses) ----------
-  function scenarioFor(rs){
-    const t = Threads[rs.thread.id];
-    const st = Math.min(rs.thread.stage, t.stages.length-1);
-    const node = t.stages[st];
-    const title = `${t.name} — ${node.t}`;
-    const text  = node.d(rs);
-    const tags  = [t.name, `Stage ${st+1}`].concat(node.tags||[]);
-    return { title, text, tags, threadId: rs.thread.id, stage: st };
-  }
-
-  function choicesFor(rs, sc){
-    // Four actions with different DCs and situational bonuses.
-    // Bonuses read inventory/flags and return a number (added to d100).
-    const ez   = (base)=> Math.max(35, base + Math.floor(rs.depth/3) - 5);  // easier DC
-    const med  = (base)=> Math.min(80, base + Math.floor(rs.depth/2));      // medium DC
-    const hard = (base)=> Math.min(95, base + Math.floor(rs.depth*0.8));    // hard DC
-    const wild = (base)=> Math.min(99, base + rs.depth);                    // very hard DC
-
-    // Common bonuses depending on items/flags
-    const bonusTorch   = (r)=> r.light>0 ? 5 : 0;
-    const bonusResolve = (r)=> Math.max(0, r.resolve-5); // +1 per resolve above 5
-    const bonusPick    = (r)=> r.inv.lockpick>0 ? 10 : 0;
-    const bonusHerbs   = (r)=> r.inv.herbs>0 ? 8 : 0;
-
-    // Define text templates & effects per thread stage
-    const acts = [];
-
-    if(sc.threadId==='vault'){
-      if(sc.stage===0){ // trail
-        acts.push({
-          text:'Survey ridgelines carefully', dc: ez(45), bonus: bonusTorch, bonusDesc:'+5 if Light>0',
-          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'You mark safe approaches (+1 Resolve).','good'); } else { r.hp--; addLog(r,'Loose shale scrapes you (-1 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Shadow rival tracks', dc: med(55), bonus: bonusResolve, bonusDesc:'+1 per Resolve above 5',
-          resolve:(ok,r)=>{ if(ok){ r.gold+=2; addLog(r,'You find dropped coin (+2 gold).','good'); } else { r.rations=Math.max(0,r.rations-1); addLog(r,'You get turned around (-1 rations).','bad'); } }
-        });
-        acts.push({
-          text:'Force march to the marker', dc: hard(70),
-          resolve:(ok,r)=>{ if(ok){ r.light++; addLog(r,'You reach before dusk (+1 Light).','good'); } else { r.hp-=2; addLog(r,'Exhaustion sets in (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Blaze a new shortcut', dc: wild(80),
-          resolve:(ok,r)=>{ if(ok){ r.inv.torch++; addLog(r,'You discover a vent with dry wood (+1 torch).','good'); } else { r.hp-=3; addLog(r,'You slip down a scree slope (-3 HP).','bad'); } }
-        });
-      }
-      if(sc.stage===1){ // threshold
-        acts.push({
-          text:'Work the sigils with care', dc: med(60), bonus: bonusTorch, bonusDesc:'+5 if Light>0',
-          resolve:(ok,r)=>{ if(ok){ r.flags.add('ward_softened'); addLog(r,'You weaken the ward.','good'); } else { r.hp-=2; addLog(r,'A glyph sparks you (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Use lockpick on side grate', dc: ez(50), bonus: bonusPick, bonusDesc:'+10 if Lockpick',
-          resolve:(ok,r)=>{ if(ok){ r.inv.lockpick=Math.max(0,r.inv.lockpick-1); r.light++; addLog(r,'Grate yields; you stash a torch (+1 Light, -1 Lockpick).','good'); } else { addLog(r,'Pick snaps (no entry).','bad'); r.inv.lockpick=Math.max(0,r.inv.lockpick-1); } }
-        });
-        acts.push({
-          text:'Wedge door and pry', dc: hard(72),
-          resolve:(ok,r)=>{ if(ok){ r.gold+=3; addLog(r,'Stone chips reveal a cache (+3 gold).','good'); } else { r.hp-=3; addLog(r,'Lever bucks (-3 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Call the statues’ bluff', dc: wild(85), bonus: bonusResolve, bonusDesc:'+Resolve bonus',
-          resolve:(ok,r)=>{ if(ok){ r.flags.add('statues_wary'); addLog(r,'The statues still… for now.','good'); } else { r.hp-=4; addLog(r,'Stone eyes flare—pain (-4 HP).','bad'); } }
-        });
-      }
-      if(sc.stage===2){ // hazards
-        acts.push({
-          text:'Crawl under plates', dc: med(62),
-          resolve:(ok,r)=>{ if(ok){ r.gold+=2; addLog(r,'You salvage a trinket (+2 gold).','good'); } else { r.hp-=2; addLog(r,'A dart nicks you (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Sprint the gauntlet', dc: hard(76),
-          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Adrenal surge (+1 Resolve).','good'); } else { r.hp-=3; addLog(r,'Panels collapse (-3 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Probe with pole and torch', dc: ez(48), bonus: (r)=> bonusTorch(r)+2, bonusDesc:'+5 Light, +2 tool',
-          resolve:(ok,r)=>{ if(ok){ r.inv.torch=Math.max(0,r.inv.torch-1); r.rations++; addLog(r,'Safe path found (+1 rations, -1 torch).','good'); } else { r.hp--; addLog(r,'Soot chokes (-1 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Risk the chute for speed', dc: wild(88),
-          resolve:(ok,r)=>{ if(ok){ r.flags.add('backdoor'); addLog(r,'A slide to a back passage!','good'); } else { r.hp-=4; addLog(r,'You tumble hard (-4 HP).','bad'); } }
-        });
-      }
-      if(sc.stage===3){ // chamber
-        acts.push({
-          text:'Lift shard with tongs', dc: med(65),
-          resolve:(ok,r)=>{ if(ok){ r.inv.relic++; addLog(r,'Relic shard claimed (+1 relic).','good'); } else { r.hp-=2; addLog(r,'Runes bite (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Swap weight with sandbag', dc: hard(74),
-          resolve:(ok,r)=>{ if(ok){ r.gold+=6; addLog(r,'Counterweight fooled (+6 gold).','good'); } else { r.hp-=3; addLog(r,'Pedestal jerks (-3 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Appease statues with light', dc: ez(50), bonus: bonusTorch, bonusDesc:'+5 if Light>0',
-          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Glares soften (+1 Resolve).','good'); } else { r.hp--; addLog(r,'Shadows crowd (-1 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Grab and dash', dc: wild(90),
-          resolve:(ok,r)=>{ if(ok){ r.inv.relic++; r.gold+=4; addLog(r,'You snatch and sprint (+1 relic, +4 gold).','good'); } else { r.hp-=5; addLog(r,'Statues animate (-5 HP).','bad'); } }
-        });
-      }
-    }
-
-    if(sc.threadId==='caravan'){
-      if(sc.stage===0){
-        acts.push({
-          text:'Search for survivors', dc: ez(48), bonus: bonusTorch, bonusDesc:'+5 Light',
-          resolve:(ok,r)=>{ if(ok){ r.inv.bandage++; addLog(r,'You find supplies (+1 bandage).','good'); } else { r.hp--; addLog(r,'Collapsing wagon (-1 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Trail the raiders quietly', dc: med(58), bonus: bonusResolve, bonusDesc:'+Resolve bonus',
-          resolve:(ok,r)=>{ if(ok){ r.flags.add('raider_trail'); addLog(r,'You mark their route.','good'); } else { r.rations--; addLog(r,'You lose time (-1 rations).','bad'); }
-          }
-        });
-        acts.push({
-          text:'Signal guards with torch', dc: hard(72), bonus: bonusTorch, bonusDesc:'+5 Light',
-          resolve:(ok,r)=>{ if(ok){ r.gold+=2; addLog(r,'Thanks in coin (+2 gold).','good'); } else { r.hp-=2; addLog(r,'Signal draws arrows (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Rush the verge', dc: wild(85),
-          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Boldness pays (+1 Resolve).','good'); } else { r.hp-=4; addLog(r,'Ambushers strike (-4 HP).','bad'); } }
-        });
-      }
-      if(sc.stage===1){
-        acts.push({
-          text:'Set a counter-ambush', dc: hard(73),
-          resolve:(ok,r)=>{ if(ok){ r.gold+=4; addLog(r,'Loot recovered (+4 gold).','good'); } else { r.hp-=3; addLog(r,'They spot you (-3 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Cut tethers in stealth', dc: med(60),
-          resolve:(ok,r)=>{ if(ok){ r.flags.add('prisoners_freed'); addLog(r,'Several slip away to safety.','good'); } else { r.hp-=2; addLog(r,'Knife slips (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Poison cookpot with herbs', dc: ez(46), bonus: bonusHerbs, bonusDesc:'+8 if Herbs',
-          resolve:(ok,r)=>{ if(ok){ r.inv.herbs=Math.max(0,r.inv.herbs-1); r.resolve++; addLog(r,'Camp goes quiet (+1 Resolve, -1 Herbs).','good'); } else { addLog(r,'Spoil fails.','bad'); } }
-        });
-        acts.push({
-          text:'Challenge the chief', dc: wild(88), bonus: bonusResolve, bonusDesc:'+Resolve bonus',
-          resolve:(ok,r)=>{ if(ok){ r.gold+=6; addLog(r,'Chief yields tribute (+6 gold).','good'); } else { r.hp-=5; addLog(r,'Duel turns ugly (-5 HP).','bad'); } }
-        });
-      }
-      if(sc.stage===2){
-        acts.push({
-          text:'Slip bonds with lockpick', dc: ez(45), bonus: bonusPick, bonusDesc:'+10 Lockpick',
-          resolve:(ok,r)=>{ if(ok){ r.inv.lockpick=Math.max(0,r.inv.lockpick-1); r.flags.add('keyring'); addLog(r,'Keyring acquired (-1 Lockpick).','good'); } else { addLog(r,'Pick bends uselessly.','bad'); }
-          }
-        });
-        acts.push({
-          text:'Distract sentries', dc: med(59),
-          resolve:(ok,r)=>{ if(ok){ r.gold+=2; addLog(r,'You lift purses (+2 gold).','good'); } else { r.hp-=2; addLog(r,'Rock grazes you (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Silent takedowns', dc: hard(74),
-          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Swift and clean (+1 Resolve).','good'); } else { r.hp-=3; addLog(r,'Struggle is loud (-3 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Start a stampede', dc: wild(90),
-          resolve:(ok,r)=>{ if(ok){ r.gold+=5; addLog(r,'Chaos covers your escape (+5 gold).','good'); } else { r.hp-=5; addLog(r,'It tramples you (-5 HP).','bad'); } }
-        });
-      }
-      if(sc.stage===3){
-        acts.push({
-          text:'Walk at the vanguard with torch', dc: ez(48), bonus: bonusTorch, bonusDesc:'+5 Light',
-          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Merchants steady (+1 Resolve).','good'); } else { r.hp--; addLog(r,'A stray arrow (-1 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Cover flanks', dc: med(60),
-          resolve:(ok,r)=>{ if(ok){ r.gold+=3; addLog(r,'Grateful reward (+3 gold).','good'); } else { r.hp-=2; addLog(r,'You take a hit (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Scare raiders with fire', dc: hard(75), bonus: bonusTorch, bonusDesc:'+5 Light',
-          resolve:(ok,r)=>{ if(ok){ r.inv.torch=Math.max(0,r.inv.torch-1); r.gold+=2; addLog(r,'They scatter (+2 gold, -1 torch).','good'); } else { r.hp-=3; addLog(r,'Backfire singes you (-3 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Sprint the convoy through', dc: wild(92),
-          resolve:(ok,r)=>{ if(ok){ r.gold+=7; addLog(r,'Breakthrough! (+7 gold).','good'); } else { r.hp-=5; addLog(r,'Carts overturn (-5 HP).','bad'); } }
-        });
-      }
-    }
-
-    if(sc.threadId==='plague'){
-      if(sc.stage===0){
-        acts.push({
-          text:'Question the healer', dc: ez(47),
-          resolve:(ok,r)=>{ if(ok){ r.inv.herbs++; addLog(r,'You receive herbs (+1 Herbs).','good'); } else { r.resolve = Math.max(3,r.resolve-1); addLog(r,'Rumors unsettle you (-1 Resolve).','bad'); } }
-        });
-        acts.push({
-          text:'Inspect the well with torch', dc: med(58), bonus: bonusTorch, bonusDesc:'+5 Light',
-          resolve:(ok,r)=>{ if(ok){ r.gold+=1; addLog(r,'Coins at the bottom (+1 gold).','good'); } else { r.hp--; addLog(r,'Fumes sting (-1 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Quarantine a hut', dc: hard(72),
-          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Order restored (+1 Resolve).','good'); } else { r.hp-=2; addLog(r,'Pushback injures you (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Drink a sample (why?)', dc: wild(90),
-          resolve:(ok,r)=>{ if(ok){ r.flags.add('weird_tolerance'); addLog(r,'You feel… resistant?','good'); } else { r.hp-=4; addLog(r,'Terrible idea (-4 HP).','bad'); } }
-        });
-      }
-      if(sc.stage===1){
-        acts.push({
-          text:'Enter tannery vents', dc: hard(74), bonus:(r)=> (r.light>0?5:0), bonusDesc:'+5 Light',
-          resolve:(ok,r)=>{ if(ok){ r.flags.add('found_source'); addLog(r,'Source confirmed.','good'); } else { r.hp-=3; addLog(r,'Fumes choke (-3 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Follow waste channels', dc: med(60),
-          resolve:(ok,r)=>{ if(ok){ r.inv.lockpick++; addLog(r,'You find a toolbox (+1 lockpick).','good'); } else { r.hp-=2; addLog(r,'You slip (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Interrogate the foreman', dc: ez(50), bonus: bonusResolve, bonusDesc:'+Resolve bonus',
-          resolve:(ok,r)=>{ if(ok){ r.gold+=2; addLog(r,'A bribe changes hands (+2 gold).','good'); } else { r.resolve=Math.max(3,r.resolve-1); addLog(r,'He stonewalls you (-1 Resolve).','bad'); } }
-        });
-        acts.push({
-          text:'Seal vents with tar', dc: wild(88),
-          resolve:(ok,r)=>{ if(ok){ r.resolve+=2; addLog(r,'Air sweetens (+2 Resolve).','good'); } else { r.hp-=4; addLog(r,'You pass out (-4 HP).','bad'); } }
-        });
-      }
-      if(sc.stage===2){
-        acts.push({
-          text:'Brew tonic (herbs)', dc: med(62), bonus: bonusHerbs, bonusDesc:'+8 Herbs',
-          resolve:(ok,r)=>{ if(ok){ r.inv.herbs=Math.max(0,r.inv.herbs-1); r.flags.add('tonic'); addLog(r,'You bottle a tonic (-1 Herbs).','good'); } else { r.hp-=2; addLog(r,'Batch curdles (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Distill under torchlight', dc: ez(48), bonus: (r)=> r.light>0?5:0, bonusDesc:'+5 Light',
-          resolve:(ok,r)=>{ if(ok){ r.inv.bandage++; addLog(r,'Sterile wraps found (+1 bandage).','good'); } else { r.hp--; addLog(r,'You scorch your hand (-1 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Test on yourself', dc: hard(76),
-          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'It seems to work (+1 Resolve).','good'); } else { r.hp-=3; addLog(r,'Side effects (-3 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Trade formula for gold', dc: wild(92),
-          resolve:(ok,r)=>{ if(ok){ r.gold+=6; addLog(r,'Apothecary pays (+6 gold).','good'); } else { r.hp-=4; addLog(r,'Deal turns sour (-4 HP).','bad'); } }
-        });
-      }
-      if(sc.stage===3){
-        acts.push({
-          text:'Organize a line', dc: ez(46),
-          resolve:(ok,r)=>{ if(ok){ r.resolve++; addLog(r,'Distribution smooth (+1 Resolve).','good'); } else { r.hp--; addLog(r,'A scuffle breaks out (-1 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Guard the cart', dc: med(60),
-          resolve:(ok,r)=>{ if(ok){ r.gold+=3; addLog(r,'Grateful donations (+3 gold).','good'); } else { r.hp-=2; addLog(r,'You are jostled (-2 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Rally the crowd', dc: hard(75), bonus: bonusResolve, bonusDesc:'+Resolve bonus',
-          resolve:(ok,r)=>{ if(ok){ r.flags.add('hero_of_fen'); addLog(r,'Cheers rise—your name spreads.','good'); } else { r.hp-=3; addLog(r,'Bottles fly (-3 HP).','bad'); } }
-        });
-        acts.push({
-          text:'Slip away to rest', dc: wild(88),
-          resolve:(ok,r)=>{ if(ok){ r.rations++; addLog(r,'You find a hot meal (+1 rations).','good'); } else { r.hp-=3; addLog(r,'Exhaustion trips you (-3 HP).','bad'); } }
-        });
-      }
-    }
-
-    return acts;
-  }
+  mClose.addEventListener('click', ()=>{ closeModal(); afterPick(); });
+  mCancel.addEventListener('click', ()=>{ closeModal(); state.pendingCheck=null; refreshUI(); });
 
   // ---------- Step / Flow ----------
   function nextScenario(rs){
     const sc = scenarioFor(rs);
     rs.scenario = sc;
     const options = choicesFor(rs, sc);
-    // Always show exactly 4
     renderChoices(rs, options.slice(0,4));
   }
 
@@ -597,9 +510,10 @@
       rs.thread.stage++;
     } else {
       // Completed arc: grant reward and roll a new random thread
-      rs.gold += 5;
-      addLog(rs,'Arc complete (+5 gold).','good');
+      rs.gold += 10;
+      addLog(rs,'Arc complete (+10 gold).','good');
       rs.thread = pickThread();
+      rs.thread.stage = 0;
     }
   }
 
@@ -649,7 +563,6 @@
   $('#btnRetire').onclick = ()=>{
     const rs = state.run; if(!rs) return;
     if(!isCampDepth(rs.depth)){ addLog(rs,'You cannot retire here. Find a camp.'); refreshUI(); return; }
-    // Settlement: relic shards convert to gold too
     const relicPayout = (rs.inv.relic||0)*8; rs.inv.relic=0;
     const payoutMinor = (rs.gold + relicPayout) * 50; // 1 gold = 0.50 FAKE
     state.walletMinor += payoutMinor; persist(); updateWallet();
