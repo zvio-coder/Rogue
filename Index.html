@@ -1,9 +1,10 @@
 <!doctype html>
+
 <html lang="en">
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Roguechain — Dice Roll Edition (Mobile Optimized)</title>
+<title>Roguechain — Dice Roll Edition (Scenarios x4, Mobile)</title>
 <style>
   :root{
     --bg:#0b0f14;--panel:#0f1620;--panel2:#0d141d;--ink:#e6edf3;--muted:#9aa5b1;--accent:#72a1ff;--good:#42d392;--bad:#ff6b6b;--edge:#1f2a37
@@ -49,6 +50,11 @@
   .die.rolling{animation:shake .9s ease-in-out}
   @keyframes shake{0%{transform:rotate(0)}25%{transform:rotate(8deg)}50%{transform:rotate(-8deg)}75%{transform:rotate(5deg)}100%{transform:rotate(0)}}
   @media (max-width:480px){.die{width:56px;height:56px}.die .value{font-size:18px}}
+  /* Scenario box */
+  .scenario{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px}
+  .scenario h3{margin:0 0 6px;font-size:16px}
+  .scenario p{margin:0;color:#c8d0d8}
+  .tag{display:inline-block;background:#1a2432;border:1px solid #2a3a52;border-radius:999px;padding:3px 8px;margin-right:6px;font-size:11px;color:#9fb4d6}
 </style>
 </head>
 <body>
@@ -60,74 +66,78 @@
         <button id="btnFaucet">Add Test Coins</button>
         <button id="btnWithdraw">Withdraw 5.00</button>
       </div>
-    </header>
+    </header><main>
+  <section class="card">
+    <h2>Adventure</h2>
+    <div class="row">
+      <button id="btnStart" class="primary">Start Run (Pay Entry Fee)</button>
+      <div class="pill" id="entryFee">Entry fee: 5.00 FAKE</div>
+      <div class="pill" id="pass">No Character Pass</div>
+    </div>
 
-    <main>
-      <section class="card">
-        <h2>Adventure</h2>
-        <div class="row">
-          <button id="btnStart" class="primary">Start Run (Pay Entry Fee)</button>
-          <div class="pill" id="entryFee">Entry fee: 5.00 FAKE</div>
-          <div class="pill" id="pass">No Character Pass</div>
-        </div>
+    <div class="stats">
+      <div class="stat">HP <div id="sHP">—</div></div>
+      <div class="stat">Rations <div id="sR">—</div></div>
+      <div class="stat">Light <div id="sL">—</div></div>
+      <div class="stat">Resolve <div id="sRV">—</div></div>
+      <div class="stat">Gold <div id="sG">—</div></div>
+      <div class="stat">Depth <div id="sD">—</div></div>
+    </div>
 
-        <div class="stats">
-          <div class="stat">HP <div id="sHP">—</div></div>
-          <div class="stat">Rations <div id="sR">—</div></div>
-          <div class="stat">Light <div id="sL">—</div></div>
-          <div class="stat">Resolve <div id="sRV">—</div></div>
-          <div class="stat">Gold <div id="sG">—</div></div>
-          <div class="stat">Depth <div id="sD">—</div></div>
-        </div>
+    <div id="campRow" class="row" style="display:none">
+      <button id="btnRetire">Retire at Camp (Cash Out)</button>
+      <span class="hint">Camps appear every 4 depths. Retire here to bank your gold into your wallet.</span>
+    </div>
 
-        <div id="campRow" class="row" style="display:none">
-          <button id="btnRetire">Retire at Camp (Cash Out)</button>
-          <span class="hint">Camps appear every 4 depths. Retire here to bank your gold into your wallet.</span>
-        </div>
+    <div class="scenario" id="scenarioBox" style="display:none">
+      <div class="row" style="justify-content:space-between;align-items:center">
+        <h3 id="scTitle" style="margin:0">—</h3>
+        <div id="scTags"></div>
+      </div>
+      <p id="scText">—</p>
+    </div>
 
-        <div class="divider"></div>
-        <div class="choices" id="choices"></div>
+    <div class="divider"></div>
+    <div class="choices" id="choices"></div>
 
-        <div class="divider"></div>
-        <div class="check" id="checkBox" style="display:none">
-          <div id="checkText" class="hint">—</div>
-          <div class="tray" aria-label="Dice tray">
-            <div class="die" id="d6" data-sides="6" role="button" aria-label="Roll d6"><span class="value">d6</span><span class="label">d6</span></div>
-            <div class="die" id="d12" data-sides="12" role="button" aria-label="Roll d12"><span class="value">d12</span><span class="label">d12</span></div>
-            <div class="die" id="d20" data-sides="20" role="button" aria-label="Roll d20"><span class="value">d20</span><span class="label">d20</span></div>
-          </div>
-          <div class="hint">Tap the highlighted die to roll. Meet or beat the DC to succeed.</div>
-        </div>
+    <div class="divider"></div>
+    <div class="check" id="checkBox" style="display:none">
+      <div id="checkText" class="hint">—</div>
+      <div class="tray" aria-label="Dice tray">
+        <div class="die" id="d6" data-sides="6" role="button" aria-label="Roll d6"><span class="value">d6</span><span class="label">d6</span></div>
+        <div class="die" id="d12" data-sides="12" role="button" aria-label="Roll d12"><span class="value">d12</span><span class="label">d12</span></div>
+        <div class="die" id="d20" data-sides="20" role="button" aria-label="Roll d20"><span class="value">d20</span><span class="label">d20</span></div>
+      </div>
+      <div class="hint">Tap the highlighted die to roll. Meet or beat the DC to succeed.</div>
+    </div>
 
-        <div class="divider"></div>
-        <div class="log" id="log"></div>
-      </section>
+    <div class="divider"></div>
+    <div class="log" id="log"></div>
+  </section>
 
-      <aside class="card">
-        <h2>How it works</h2>
-        <ul class="muted">
-          <li>Use <b>Add Test Coins</b> for demo funds.</li>
-          <li><b>Start Run</b> pays entry fee and mints a one-life Character Pass.</li>
-          <li>Each choice sets a <b>dice check</b> (die + DC). Tap the die to resolve.</li>
-          <li><b>Camps</b> every 4 depths let you <b>Retire</b> and bank loot to your wallet.</li>
-          <li>If you die, you lose unbanked loot and your pass burns (permadeath).</li>
-        </ul>
-        <div class="divider"></div>
-        <h2>Tombstones</h2>
-        <div class="tombstones" id="tombstones">—</div>
-      </aside>
-    </main>
+  <aside class="card">
+    <h2>How it works</h2>
+    <ul class="muted">
+      <li>Every turn spawns a fresh <b>scenario</b> with <b>4 choices</b> (Safe / Bold / Risky / Wild).</li>
+      <li>Each choice sets a <b>dice check</b> (die + DC). Tap the die to resolve.</li>
+      <li>Camps every 4 depths let you <b>Retire</b> and bank loot to your wallet.</li>
+      <li>If you die, you lose unbanked loot and your pass burns (permadeath).</li>
+    </ul>
+    <div class="divider"></div>
+    <h2>Tombstones</h2>
+    <div class="tombstones" id="tombstones">—</div>
+  </aside>
+</main>
 
-    <p class="hint" style="margin-top:10px">All data (wallet, tombstones) is stored locally in your browser (localStorage). Token: <b>FAKE</b>.</p>
-  </div>
+<p class="hint" style="margin-top:10px">All data (wallet, tombstones) is stored locally in your browser (localStorage). Token: <b>FAKE</b>.</p>
 
-<script>
+  </div><script>
 (function(){
   // ---------- Helpers & Storage ----------
   const $ = sel => document.querySelector(sel);
   const fmtMinor = (m) => `${(m/100).toFixed(2)} FAKE`;
   const store = {
-    key: 'rc-web-dice-v3',
+    key: 'rc-web-dice-scenarios-v1',
     load(){ try{ return JSON.parse(localStorage.getItem(this.key)||'{}'); }catch(_){ return {}; } },
     save(obj){ localStorage.setItem(this.key, JSON.stringify(obj)); }
   };
@@ -135,20 +145,22 @@
   // ---------- Global State ----------
   const state = {
     walletMinor: 0,
-    entryFeeMinorBase: 500, // 5.00 FAKE
-    pass: null,             // { runId, entryFeeMinor }
-    run: null,              // RunState
-    tombstones: [],         // [{runId, depth, gold, time}]
-    pendingCheck: null      // { text, die, dc, resolve(success, run) }
+    entryFeeMinorBase: 500,
+    pass: null,
+    run: null,
+    tombstones: [],
+    pendingCheck: null,
+    recentScenarios: [] // cooldown list of scenario IDs to avoid repeats
   };
   Object.assign(state, store.load());
   if(!Array.isArray(state.tombstones)) state.tombstones = [];
+  if(!Array.isArray(state.recentScenarios)) state.recentScenarios = [];
 
-  function persist(){ store.save({ walletMinor: state.walletMinor, tombstones: state.tombstones }); }
+  function persist(){ store.save({ walletMinor: state.walletMinor, tombstones: state.tombstones, recentScenarios: state.recentScenarios }); }
 
   // ---------- Run Model ----------
   function newRun(runId){
-    return { runId, depth:0, hp:10, resolve:5, rations:3, light:3, gold:0, flags:new Set(), alive:true, log:[] };
+    return { runId, depth:0, hp:10, resolve:5, rations:3, light:3, gold:0, flags:new Set(), alive:true, log:[], scenario:null };
   }
   function isCampDepth(d){ return d>0 && d%4===0; }
   function addLog(rs, msg, cls){ rs.log.push(`<span class="${cls||''}">${msg}</span>`); }
@@ -169,6 +181,10 @@
   const checkBox = $('#checkBox');
   const checkText = $('#checkText');
   const diceEls = [$('#d6'), $('#d12'), $('#d20')];
+  const scBox = $('#scenarioBox');
+  const scTitle = $('#scTitle');
+  const scText = $('#scText');
+  const scTags = $('#scTags');
 
   function dynamicEntryFee(){ const jitter = Math.floor(Math.random()*50); return Math.max(100, state.entryFeeMinorBase + jitter); }
   let lastFee = dynamicEntryFee();
@@ -182,7 +198,7 @@
 
     if(!state.run){
       sHP.textContent='—'; sR.textContent='—'; sL.textContent='—'; sRV.textContent='—'; sG.textContent='—'; sD.textContent='—';
-      elLog.innerHTML=''; elChoices.innerHTML=''; elCampRow.style.display='none'; checkBox.style.display='none';
+      elLog.innerHTML=''; elChoices.innerHTML=''; elCampRow.style.display='none'; checkBox.style.display='none'; scBox.style.display='none';
       diceEls.forEach(el=>{ el.classList.remove('armed'); el.querySelector('.value').textContent = `d${el.dataset.sides}`; });
       return;
     }
@@ -196,13 +212,20 @@
       el.classList.toggle('armed', Number(el.dataset.sides)===need);
       el.classList.toggle('disabled', !!state.pendingCheck && Number(el.dataset.sides)!==need);
     });
+
+    if(rs.scenario){
+      scBox.style.display='block';
+      scTitle.textContent = rs.scenario.title;
+      scText.textContent = rs.scenario.text;
+      scTags.innerHTML = rs.scenario.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+    } else { scBox.style.display='none'; }
   }
 
   function renderChoices(rs, choices){
     elChoices.innerHTML='';
     choices.forEach(c=>{
       const btn=document.createElement('button');
-      const req=document.createElement('span'); req.className='req'; req.textContent=`d${c.die} ≥ ${c.dc}`;
+      const req=document.createElement('span'); req.className='req'; req.textContent=`${c.risk} · d${c.die} ≥ ${c.dc}`;
       btn.appendChild(document.createTextNode(c.text));
       btn.appendChild(req);
       btn.onclick=()=>{ armCheck(c); };
@@ -211,8 +234,8 @@
   }
 
   function armCheck(check){
-    state.pendingCheck = check; // {text, die, dc, resolve}
-    checkText.textContent = `Check: ${check.text} — roll d${check.die} and meet or beat DC ${check.dc}`;
+    state.pendingCheck = check; // {text, die, dc, risk, resolve}
+    checkText.textContent = `Check: ${check.text} — roll d${check.die} and meet DC ${check.dc} (${check.risk})`;
     Array.from(elChoices.querySelectorAll('button')).forEach(b=>b.disabled=true);
     refreshUI();
   }
@@ -222,14 +245,8 @@
     el.classList.add('rolling');
     let t=0; const dur=900; const step=70;
     const tick = ()=>{
-      t+=step;
-      valEl.textContent = 1+Math.floor(Math.random()*sides);
-      if(t>=dur){
-        const final = 1+Math.floor(Math.random()*sides);
-        valEl.textContent = final;
-        el.classList.remove('rolling');
-        done(final);
-      } else { setTimeout(tick, step); }
+      t+=step; valEl.textContent = 1+Math.floor(Math.random()*sides);
+      if(t>=dur){ const final = 1+Math.floor(Math.random()*sides); valEl.textContent = final; el.classList.remove('rolling'); done(final);} else setTimeout(tick, step);
     };
     tick();
   }
@@ -260,67 +277,83 @@
     }).join('<br>');
   }
 
-  // ---------- Encounter Generation (with dice checks) ----------
-  function weightedSample(list, k){
-    const pool = list.slice(); const out=[];
-    for(let n=0;n<Math.min(k, pool.length);n++){
-      const total = pool.reduce((a,c)=>a+(c.weight||10),0);
-      let pick = Math.floor(Math.random()*total); let idx=0;
-      for(let i=0;i<pool.length;i++){ pick -= (pool[i].weight||10); if(pick<0){ idx=i; break; } }
-      out.push(pool.splice(idx,1)[0]);
+  // ---------- Scenario Generator (Large variety, low repeats) ----------
+  const Biomes = ['Crypt','Forest','Cavern','Ruins','Desert','Coast','Bog','Tundra'];
+  const Objectives = ['rescue a captive','salvage supplies','map a route','recover a relic','hunt a beast','escort a caravan','broker a truce','cleanse a curse'];
+  const Obstacles = ['bandit ambush','arcane ward','rockfall maze','toxic spores','quicksand field','ghostly wails','flooded passage','mirror illusions'];
+  const Twists = ['a rival arrives','time is short','the moonlight warps things','someone betrays you','an omen chills the air','you are being watched'];
+
+  function rand(arr){ return arr[Math.floor(Math.random()*arr.length)]; }
+  function titleCase(s){ return s.charAt(0).toUpperCase()+s.slice(1); }
+  function makeScenario(depth){
+    let tries=0; let id;
+    let biome = rand(Biomes), obj = rand(Objectives), obs = rand(Obstacles), twist = Math.random()<0.6? rand(Twists):null;
+    while(tries<50){
+      id = `${biome}|${obj}|${obs}|${twist||''}`;
+      if(!state.recentScenarios.includes(id)) break;
+      biome = rand(Biomes); obj = rand(Objectives); obs = rand(Obstacles); twist = Math.random()<0.6? rand(Twists):null; tries++;
     }
-    return out;
+    const title = `${biome}: ${titleCase(obj)}`;
+    const text = `You reach a ${biome.toLowerCase()} where you must ${obj}. The path is threatened by ${obs}${twist?`, and ${twist}`:''}.`;
+    const tags = [biome, obs.split(' ')[0], 'Depth '+depth];
+    return { id, title, text, tags };
   }
 
-  function choice(text, die, dc, weight, resolve){ return { text, die, dc, weight, resolve }; }
+  function pushRecent(id){
+    state.recentScenarios.unshift(id);
+    const MAX = 120; // cooldown length — prevents repeats for a long time
+    if(state.recentScenarios.length>MAX) state.recentScenarios.pop();
+    persist();
+  }
 
-  function generateChoices(rs){
-    const list = [];
-    // Search
-    list.push(choice('Search the ruins', 12, 7, 12, (ok,s)=>{
-      if(ok){ const r=Math.random(); if(r<0.4){ s.gold+=2; addLog(s,'You find 2 gold.','good'); } else if(r<0.7){ s.rations+=1; addLog(s,'You find rations.','good'); } else { s.flags.add('ancient_key'); addLog(s,'You pocket an ancient key.','good'); } }
-      else { s.hp-=3; addLog(s,'A sandfall trap! (-3 HP).','bad'); }
-    }));
-    // Fight
-    list.push(choice('Fight a lurking horror', 20, Math.min(15,10+Math.floor(rs.depth/2)), 10, (ok,s)=>{
-      if(ok){ s.gold+=3; addLog(s,'You slay it (+3 gold).','good'); }
-      else { s.hp-=4; addLog(s,'It wounds you (-4 HP).','bad'); }
-    }));
-    // Parley
-    list.push(choice('Parley with the bandits', 20, 10, 8, (ok,s)=>{
-      const hasTruce = s.flags.has('truce_bandits');
-      if(hasTruce && ok){ s.gold+=1; addLog(s,'Your truce holds. They tip you 1 gold.','good'); return; }
-      if(ok){ s.flags.add('truce_bandits'); addLog(s,'You broker a truce. (Flag set)','good'); }
-      else { s.hp-=2; addLog(s,'Talks sour; you’re roughed up (-2 HP).','bad'); }
-    }));
-    // Unlock (requires key)
-    if(rs.flags.has('ancient_key')){
-      list.push(choice('Unlock a sealed vault (key)', 12, 9, 6, (ok,s)=>{
-        s.flags.delete('ancient_key');
-        if(ok){ s.gold+=8; addLog(s,'Vault spills 8 gold.','good'); }
-        else { s.hp-=5; addLog(s,'It was trapped! (-5 HP).','bad'); }
-      }));
-    }
-    // Camp rest (only at camp)
-    if(isCampDepth(rs.depth)){
-      list.push(choice('Rest at the camp (heal 3, -1 ration)', 6, 4, 12, (ok,s)=>{
-        if(!ok){ addLog(s,'You fail to settle; restless night.','bad'); return; }
-        if(s.rations>0){ s.rations-=1; s.hp=Math.min(s.hp+3,12); addLog(s,'You rest and recover (+3 HP, -1 ration).','good'); }
-        else addLog(s,'No rations to rest.', 'bad');
-      }));
-    }
+  // ---------- Choice Factory (4 risk tiers every turn) ----------
+  const Risks = {
+    Safe:   { die:6,  baseDC:3,  dmg:1, loot:[0,1,2], bonus:0 },
+    Bold:   { die:12, baseDC:7,  dmg:2, loot:[1,2,3,4], bonus:1 },
+    Risky:  { die:20, baseDC:12, dmg:4, loot:[3,4,5,6,8], bonus:2 },
+    Wild:   { die:20, baseDC:15, dmg:6, loot:[5,8,10,12], bonus:3 }
+  };
 
-    // Offer 2–3 choices
-    return weightedSample(list, Math.min(3, Math.max(2, list.length)));
+  function dcFor(risk, depth){ return Math.min(20, risk.baseDC + Math.floor(depth/3) + (Math.random()<0.3?1:0)); }
+
+  function fourChoicesFor(scenario, rs){
+    const depth = rs.depth;
+    const themed = {
+      Safe: `Scout the area and avoid ${scenario.tags[1].toLowerCase()}`,
+      Bold: `Negotiate or distract those behind the ${scenario.tags[1].toLowerCase()}`,
+      Risky: `Exploit a weakness in the ${scenario.tags[1].toLowerCase()}`,
+      Wild: `Charge straight through the ${scenario.tags[1].toLowerCase()}`
+    };
+    return Object.entries(Risks).map(([name, r])=>{
+      const dc = dcFor(r, depth);
+      return {
+        text: themed[name],
+        risk: name,
+        die: r.die,
+        dc,
+        resolve: (ok,s)=>{
+          if(ok){
+            const g = r.loot[Math.floor(Math.random()*r.loot.length)];
+            if(g>0){ s.gold += g; addLog(s, `${name} success: +${g} gold.`, 'good'); }
+            else { s.resolve = Math.min(s.resolve+1, 8); addLog(s, `${name} success: +1 resolve.`, 'good'); }
+          } else {
+            s.hp -= r.dmg; addLog(s, `${name} backfires: -${r.dmg} HP.`, 'bad');
+          }
+        }
+      };
+    });
   }
 
   function step(){
     const rs = state.run; if(!rs || !rs.alive) return;
     rs.depth += 1;
-    // ambient fatigue
-    if(Math.random()<Math.min(0.5, rs.depth*0.02)){ rs.hp -= 1; addLog(rs,'Fatigue nips at you (-1 HP).','bad'); }
+    if(Math.random()<Math.min(0.45, rs.depth*0.02)){ rs.hp -= 1; addLog(rs,'Fatigue nips at you (-1 HP).','bad'); }
     if(isCampDepth(rs.depth)){ addLog(rs,'You reach a camp. You can retire safely here.'); }
-    renderChoices(rs, generateChoices(rs));
+
+    // New scenario each turn
+    const sc = makeScenario(rs.depth);
+    rs.scenario = sc; pushRecent(sc.id);
+    renderChoices(rs, fourChoicesFor(sc, rs));
     refreshUI();
   }
 
@@ -370,6 +403,5 @@
   renderTombs();
   refreshUI();
 })();
-</script>
-</body>
+</script></body>
 </html>
