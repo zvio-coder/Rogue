@@ -3,7 +3,7 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Roguechain — Coherent Scenes • d100 • Dust</title>
+<title>Roguechain — Coherent Scenes • No Repeats • d100 • Dust</title>
 <style>
   :root{--bg:#0b0f14;--panel:#0f1620;--panel2:#0d141d;--ink:#e6edf3;--muted:#9aa5b1;--accent:#72a1ff;--good:#42d392;--bad:#ff6b6b;--edge:#1f2a37;--shadow:0 8px 30px rgba(0,0,0,.45)}
   *{box-sizing:border-box} html,body{height:100%} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent}
@@ -25,13 +25,14 @@
   .log .good{color:var(--good)} .log .bad{color:var(--bad)}
   .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
   .hint{color:var(--muted);font-size:12px} .divider{height:1px;background:var(--edge);margin:8px 0} .muted{color:var(--muted)}
-  .tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}.tab{padding:8px 12px;border:1px solid var(--edge);border-radius:999px;background:var(--panel2);cursor:pointer}.tab.active{background:#1b2736;border-color:#315a9f}
+  .tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+  .tab{padding:8px 12px;border:1px solid var(--edge);border-radius:999px;background:var(--panel2);cursor:pointer}
+  .tab.active{background:#1b2736;border-color:#315a9f}
   .scenario{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px}
   .scenario h3{margin:0 0 6px;font-size:16px} .scenario p{margin:0;color:#c8d0d8}
   .tag{display:inline-block;background:#1a2432;border:1px solid #2a3a52;border-radius:999px;padding:3px 8px;margin-right:6px;font-size:11px;color:#9fb4d6}
   .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px} @media (max-width:600px){.grid{grid-template-columns:1fr}}
   .item{display:flex;justify-content:space-between;align-items:center;background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:8px}
-  /* modal + die */
   .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
   .modal.show{display:flex} .modal .sheet{max-width:560px;width:100%;background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
   .modal h3{margin:0 0 6px;font-size:18px} .modal .sub{color:var(--muted);font-size:13px;margin-bottom:8px}
@@ -47,7 +48,7 @@
 <body>
 <div class="wrap">
   <header>
-    <div class="brand">Roguechain — Coherent Scenes • d100 • Dust</div>
+    <div class="brand">Roguechain — Coherent Scenes • No Repeats • d100 • Dust</div>
     <div class="wallet">
       <div class="pill" id="balance">Wallet: 0 Dust</div>
       <button id="btnFaucet">Add Test Dust</button>
@@ -126,12 +127,11 @@
     </section>
 
     <aside class="card">
-      <h2>Why this is better</h2>
+      <h2>No more repeats</h2>
       <ul class="muted">
-        <li>Each **scene** has actions that only fit that scene.</li>
-        <li>Outcomes can **push follow-up scenes** (e.g., fail a flood → swept away).</li>
-        <li>Dust + loot drop only from **kills/searches/chests/locks**.</li>
-        <li>20-stage threads still guide overall progress; follow-ups don’t break the arc.</li>
+        <li>Run tracks a **usedScenes** set + recent cooldown → no duplicate scene keys until pool is exhausted.</li>
+        <li>Scene **variants** per type keep options contextual (combat, traps, environment, chest, search…).</li>
+        <li>Flood chain still has coherent follow-ups (swept → washed cavern → …).</li>
       </ul>
       <div class="divider"></div>
       <h2>Tombstones</h2>
@@ -170,7 +170,7 @@
   // ===== Helpers & Storage =====
   const $=s=>document.querySelector(s);
   const todayStr=()=>new Date().toISOString().slice(0,10);
-  const store={ key:'rc-scenes-dust-v1', load(){try{return JSON.parse(localStorage.getItem(this.key)||'{}')}catch(_){return{}}}, save(o){localStorage.setItem(this.key,JSON.stringify(o))} };
+  const store={ key:'rc-scenes-norepeat-v1', load(){try{return JSON.parse(localStorage.getItem(this.key)||'{}')}catch(_){return{}}}, save(o){localStorage.setItem(this.key,JSON.stringify(o))} };
 
   // ===== Catalog =====
   const WEAPONS=[{id:'rust_dagger',name:'Rusty Dagger',atk:2,hp:0},{id:'short_sword',name:'Short Sword',atk:5,hp:0},{id:'warblade',name:'Warblade',atk:10,hp:1}];
@@ -180,8 +180,7 @@
   const state={
     walletDust:0,tombstones:[],
     stash:{weapons:['rust_dagger'],armours:['leather'],trinkets:[],consumables:{bandage:1,food:1},equip:{weapon:'rust_dagger',armour:'leather'},amulet:{have:false,lastUsed:''}},
-    pass:null,
-    run:null
+    pass:null, run:null
   };
   Object.assign(state,store.load());
   if(!state.stash) state.stash={weapons:['rust_dagger'],armours:['leather'],trinkets:[],consumables:{bandage:1,food:1},equip:{weapon:'rust_dagger',armour:'leather'},amulet:{have:false,lastUsed:''}};
@@ -190,7 +189,7 @@
 
   // ===== Gear/Run =====
   function gearStats(){const w=WEAPONS.find(x=>x.id===state.stash.equip.weapon)||{};const a=ARMOURS.find(x=>x.id===state.stash.equip.armour)||{};return{atk:w.atk||0,def:a.def||0,hp:(w.hp||0)+(a.hp||0)}}
-  function newRun(id){const g=gearStats();return{runId:id,depth:0,alive:true,hp:10+g.hp,stamina:8,nutrition:6,defense:g.def,dust:0,gAtk:g.atk,log:[],scenario:null,thread:pickThread(),follow:null};}
+  function newRun(id){const g=gearStats();return{runId:id,depth:0,alive:true,hp:10+g.hp,stamina:8,nutrition:6,defense:g.def,dust:0,gAtk:g.atk,log:[],scenario:null,thread:pickThread(),follow:null,usedScenes:[],recent:[]};}
   function addLog(r,m,cls){r.log.push(`<span class="${cls||''}">${m}</span>`);} function isCampDepth(d){return d>0&&d%4===0;}
 
   // ===== Threads (20) =====
@@ -203,198 +202,237 @@
   function pickThread(){const id=pick(['vault','caravan','plague']);return{id,stage:0}}
 
   // ===== Scene Engine =====
-  // Scene has: {type, title, text, tags, buildActions(rs)}
-  // After resolve, may set rs.follow = {type, context} to force immediate follow-up.
-  const Scene = {};
+  const Scene={}; // registry
 
   const DC = (rs,stage,hardness=0)=> 45 + Math.min(20, Math.floor(rs.depth*0.7)) + Math.floor(stage/2) + hardness;
   const bonusAtk = r=> r.gAtk||0;
   const bonusStm = r=> Math.max(0,r.stamina-6);
   const bonusDef = r=> Math.floor(r.defense/2);
 
-  // --- Flooded tunnel (ENV_FLOOD) + coherent follow-ups ---
-  Scene.ENV_FLOOD = (rs, ctx)=>({
-    title: titleFor(rs,'ENVIRONMENT'),
-    text: 'Water surges through a flooded tunnel, tugging at your legs.',
-    tags: baseTags(rs,'ENVIRONMENT'),
-    buildActions(){
-      const base=DC(rs,rs.thread.stage);
-      return [
-        {text:'Time the surges and wade along the wall',
-         dc:Math.min(95,base+10), bonus:null,
-         onSuccess:(r,fx)=>{fx.push('You reach firm ground.');},
-         onFail:(r,fx)=>{ const dmg=Math.max(0,2-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (slam into stone)`); r.follow={type:'ENV_SWEPT'}; }},
-        {text:'Throw a rope and brace, hauling forward',
-         dc:Math.min(98,base+16), bonus:bonusStm,
-         onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You drag yourself ahead.'); },
-         onFail:(r,fx)=>{ r.follow={type:'ENV_SWEPT'}; fx.push('Grip slips—swept away!'); }},
-        {text:'Crawl the ceiling struts, hand over hand',
-         dc:Math.min(99,base+22), bonus:null,
-         onSuccess:(r,fx)=>{ r.dust+=2; fx.push('+2 Dust (purse on a beam)'); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (fall into torrent)`); r.follow={type:'ENV_SWEPT'}; }},
-        {text:'Backtrack to seek a higher route',
-         dc:Math.min(88,base+2), bonus:null,
-         onSuccess:(r,fx)=>{ fx.push('You find a drier detour.'); },
-         onFail:(r,fx)=>{ fx.push('Detour collapses into the same flood.'); r.follow={type:'ENV_SWEPT'}; }}
-      ];
-    }
-  });
-
-  Scene.ENV_SWEPT = (rs, ctx)=>({
-    title:titleFor(rs,'ENVIRONMENT'),
-    text:'The current takes you. You smash through foam toward an unknown outlet.',
-    tags:baseTags(rs,'ENVIRONMENT'),
-    buildActions(){
-      const base=DC(rs,rs.thread.stage,+6);
-      return [
-        {text:'Snare a jutting rock with the rope',
-         dc:Math.min(96,base+12), bonus:bonusStm,
-         onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You haul onto a ledge.'); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,4-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (dragged underwater)`); r.follow={type:'ENV_WASHED_CAVERN'}; }},
-        {text:'Let the water carry you and curl into a ball',
-         dc:Math.min(92,base+8), bonus:null,
-         onSuccess:(r,fx)=>{ fx.push('You shoot into a wide cistern.'); r.follow={type:'ENV_WASHED_CAVERN'}; },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (churned)`); r.follow={type:'ENV_WASHED_CAVERN'}; }},
-        {text:'Kick hard for a side eddy',
-         dc:Math.min(98,base+18), bonus:bonusStm,
-         onSuccess:(r,fx)=>{ fx.push('Eddy buys you breath.'); },
-         onFail:(r,fx)=>{ fx.push('Eddy collapses.'); r.follow={type:'ENV_WASHED_CAVERN'}; }},
-        {text:'Use shield/body to bounce off obstacles',
-         dc:Math.min(94,base+10), bonus:bonusDef,
-         onSuccess:(r,fx)=>{ fx.push('You redirect into a calmer chute.'); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,2-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (ricochet)`); r.follow={type:'ENV_WASHED_CAVERN'}; }}
-      ];
-    }
-  });
-
-  Scene.ENV_WASHED_CAVERN = (rs)=>({
-    title:titleFor(rs,'SEARCH'),
-    text:'You spill into a low cavern strewn with crates and soggy packs.',
-    tags:baseTags(rs,'SEARCH'),
-    buildActions(){
-      const base=DC(rs,rs.thread.stage);
-      return [
-        {text:'Search the crates quickly',
-         dc:Math.min(95,base+12), bonus:null,
-         onSuccess:(r,fx)=>{ r.dust+=3; fx.push('+3 Dust'); maybeFindBandage(fx); },
-         onFail:(r,fx)=>{ fx.push('Ruined goods.'); }},
-        {text:'Pry open a sealed coffer',
-         dc:Math.min(98,base+18), bonus:bonusStm,
-         onSuccess:(r,fx)=>{ r.dust+=6; fx.push('+6 Dust'); maybeFindGear(fx); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,1-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (splinter)`); }},
-        {text:'Catch your breath on the shore',
-         dc:Math.min(85,base+0), bonus:null,
-         onSuccess:(r,fx)=>{ if(state.stash.consumables.food>0 && r.nutrition<10){state.stash.consumables.food--; r.nutrition++; fx.push('Ate Food: +1 Nutrition'); persist();} else {fx.push('You steady yourself.')} },
-         onFail:(r,fx)=>{ fx.push('You shiver uncontrollably.'); }},
-        {text:'Move on before trouble arrives',
-         dc:Math.min(88,base+2), bonus:null,
-         onSuccess:(r,fx)=>{ fx.push('You press deeper.'); },
-         onFail:(r,fx)=>{ fx.push('Too slow—footsteps approach.'); r.follow={type:'COMBAT_GUARDS'}; }}
-      ];
-    }
-  });
-
-  // --- Guards attack (COMBAT_GUARDS) ---
-  Scene.COMBAT_GUARDS = (rs)=>({
-    title:titleFor(rs,'COMBAT'),
-    text:'Two guards sprint at you with blades raised.',
-    tags:baseTags(rs,'COMBAT'),
-    buildActions(){
-      const base=DC(rs,rs.thread.stage);
-      return [
-        {text:'Dodge wide and break away',dc:Math.min(92,base+10),bonus:bonusStm,
-         onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You escape immediate danger.'); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (grazed)`); }},
-        {text:'Parry and counter',dc:Math.min(96,base+14),bonus:bonusAtk,
-         onSuccess:(r,fx)=>{ r.dust+=5; fx.push('+5 Dust (spoils)'); maybeFindGear(fx,true); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,4-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (hit through guard)`); }},
-        {text:'Flip past and slash mid-air',dc:Math.min(98,base+20),bonus:r=>bonusAtk(r)+(r.stamina>7?2:0),
-         onSuccess:(r,fx)=>{ r.dust+=7; fx.push('+7 Dust'); maybeFindGear(fx,true); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,6-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (hard fall)`); if(r.stamina>0){r.stamina--;fx.push('-1 Stamina')}}},
-        {text:'Charge for a double finisher',dc:Math.min(99,base+26),bonus:r=>bonusAtk(r)+(r.stamina>8?3:0),
-         onSuccess:(r,fx)=>{ r.dust+=10; fx.push('+10 Dust'); maybeFindGear(fx,true,true); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,8-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (brutal counter)`); if(r.stamina>1){r.stamina-=2;fx.push('-2 Stamina')}}}
-      ];
-    }
-  });
-
-  // --- Trap (TRAP_PLATE) ---
-  Scene.TRAP_PLATE = (rs)=>({
-    title:titleFor(rs,'TRAP'),
-    text:'You feel a plate sink beneath your heel. Mechanisms whir.',
-    tags:baseTags(rs,'TRAP'),
-    buildActions(){
-      const base=DC(rs,rs.thread.stage);
-      return [
-        {text:'Freeze and ease off the plate',dc:Math.min(94,base+12),bonus:()=>10, // lockpick skill abstraction
-         onSuccess:(r,fx)=>{ fx.push('You stabilize the trigger.'); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (dart!)`); }},
-        {text:'Sprint clear',dc:Math.min(96,base+16),bonus:bonusStm,
-         onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You dive aside.'); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,4-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (late!)`); }},
-        {text:'Raise shield and brace',dc:Math.min(98,base+20),bonus:bonusDef,
-         onSuccess:(r,fx)=>{ fx.push('Impact absorbed.'); },
-         onFail:(r,fx)=>{ const dmg=Math.max(0,5-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (crush)`); }},
-        {text:'Seek an alternate path',dc:Math.min(90,base+8),bonus:null,
-         onSuccess:(r,fx)=>{ fx.push('You skirt the hazard.'); },
-         onFail:(r,fx)=>{ fx.push('Dead end—back to the plate.'); }}
-      ];
-    }
-  });
-
-  // --- Chest/Lock/Search scenes for loot/Dust when appropriate ---
-  Scene.CHEST_ROOM = (rs)=>({
-    title:titleFor(rs,'CHEST'),
-    text:'A bronze chest rests on a cracked dais.',
-    tags:baseTags(rs,'CHEST'),
-    buildActions(){ const base=DC(rs,rs.thread.stage);
-      return [
-        {text:'Examine for traps',dc:Math.min(92,base+10),bonus:()=>10,onSuccess:(r,fx)=>{fx.push('No trap found.');},onFail:(r,fx)=>{const dmg=Math.max(0,2-r.defense);r.hp-=dmg;fx.push(`-${dmg} HP (needle!)`);}},
-        {text:'Pick the lock',dc:Math.min(96,base+14),bonus:()=>10,onSuccess:(r,fx)=>{r.dust+=5;fx.push('+5 Dust');maybeFindGear(fx);},onFail:(r,fx)=>{fx.push('Lock resists.')}} ,
-        {text:'Pry it open',dc:Math.min(98,base+18),bonus:bonusStm,onSuccess:(r,fx)=>{r.dust+=7;fx.push('+7 Dust');maybeFindGear(fx);},onFail:(r,fx)=>{const dmg=Math.max(0,1-r.defense);r.hp-=dmg;fx.push(`-${dmg} HP (splinter)`);} },
-        {text:'Leave it',dc:Math.min(85,base+0),bonus:null,onSuccess:(r,fx)=>{fx.push('You keep moving.');},onFail:(r,fx)=>{fx.push('Hesitation costs time.');}}
-      ];
-    }
-  });
-
-  Scene.SEARCH_CACHE = (rs)=>({
-    title:titleFor(rs,'SEARCH'),
-    text:'Collapsed masonry hides nooks and alcoves.',
-    tags:baseTags(rs,'SEARCH'),
-    buildActions(){ const base=DC(rs,rs.thread.stage);
-      return [
-        {text:'Rummage quietly',dc:Math.min(94,base+12),bonus:null,onSuccess:(r,fx)=>{r.dust+=3;fx.push('+3 Dust');maybeFindFood(fx);},onFail:(r,fx)=>{fx.push('Nothing useful.');}},
-        {text:'Lift floor stones',dc:Math.min(98,base+18),bonus:bonusStm,onSuccess:(r,fx)=>{r.dust+=6;fx.push('+6 Dust');maybeFindGear(fx);},onFail:(r,fx)=>{if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');}}},
-        {text:'Check satchels with a hook',dc:Math.min(95,base+14),bonus:null,onSuccess:(r,fx)=>{r.dust+=2;fx.push('+2 Dust');maybeFindBandage(fx);},onFail:(r,fx)=>{const dmg=Math.max(0,1-r.defense);r.hp-=dmg;fx.push(`-${dmg} HP (shard)`);}},
-        {text:'Move on',dc:Math.min(85,base+0),bonus:null,onSuccess:(r,fx)=>{fx.push('You conserve energy.');},onFail:(r,fx)=>{fx.push('You second-guess yourself.');}}
-      ];
-    }
-  });
-
   // Utility tags/titles
   function baseTags(rs,kind){const t=Threads[rs.thread.id];return [t.name,`Stage ${Math.min(rs.thread.stage+1,t.stages.length)}`,kind]}
   function titleFor(rs,kind){const t=Threads[rs.thread.id];const st=t.stages[Math.min(rs.thread.stage,t.stages.length-1)];return `${t.name} — ${st}`}
 
-  // Maybe-loot helpers
-  function maybeFindGear(e,allowWeapon=true,rarer=false){const r=Math.random(); if(rarer&&r<0.02) return dropAmulet(e);
-    if(r<0.5&&allowWeapon){const w=pick(WEAPONS); if(!state.stash.weapons.includes(w.id)){state.stash.weapons.push(w.id);e.push(`FOUND weapon: ${w.name}`);}else{state.run.dust+=2;e.push('Duplicate weapon → +2 Dust');}}
-    else if(r<0.98){const a=pick(ARMOURS); if(!state.stash.armours.includes(a.id)){state.stash.armours.push(a.id);e.push(`FOUND armour: ${a.name}`);}else{state.run.dust+=2;e.push('Duplicate armour → +2 Dust');}}
-    else dropAmulet(e); persist();
-  }
+  // ---- Loot helpers ----
   function dropAmulet(e){ if(!state.stash.amulet.have){state.stash.amulet.have=true;state.stash.trinkets.push('amulet_of_life');e.push('ULTRA RARE: Amulet of Life (1 free entry/day)');} else {state.run.dust+=10;e.push('+10 Dust (relic shards)');} }
+  function maybeFindGear(e,rarityBoost=0){const r=Math.random(); if(r<0.5-rarityBoost){const w=pick(WEAPONS); if(!state.stash.weapons.includes(w.id)){state.stash.weapons.push(w.id);e.push(`FOUND weapon: ${w.name}`);} else {state.run.dust+=2;e.push('Duplicate weapon → +2 Dust');}}
+    else if(r<0.98){const a=pick(ARMOURS); if(!state.stash.armours.includes(a.id)){state.stash.armours.push(a.id);e.push(`FOUND armour: ${a.name}`);} else {state.run.dust+=2;e.push('Duplicate armour → +2 Dust');}}
+    else dropAmulet(e); persist(); }
   function maybeFindBandage(e){ if(Math.random()<0.5){state.stash.consumables.bandage=(state.stash.consumables.bandage||0)+1; e.push('FOUND: Bandage'); persist();}}
   function maybeFindFood(e){ if(Math.random()<0.5){state.stash.consumables.food=(state.stash.consumables.food||0)+1; e.push('FOUND: Food'); persist();}}
 
-  // Scene picker by thread/stage (with sensible defaults)
-  function pickSceneForStage(rs){
-    const id=rs.thread.id, st=rs.thread.stage;
-    if(id==='caravan' && st===0) return 'ENV_FLOOD'; // your screenshot case: flood on the road
-    if(id==='vault' && st>=10 && st<=12) return 'TRAP_PLATE';
-    if(st%5===3) return 'COMBAT_GUARDS';
-    if(st%4===2) return 'CHEST_ROOM';
-    if(st%3===1) return 'SEARCH_CACHE';
-    return 'ENV_FLOOD'; // general environment hazard default
+  // ---- Factories for quick, contextual variants ----
+  function makeCombat(key, text){
+    Scene[key] = (rs)=>({ title:titleFor(rs,'COMBAT'), text, tags:baseTags(rs,'COMBAT'),
+      buildActions(){ const base=DC(rs,rs.thread.stage);
+        return [
+          {text:'Dodge wide and break away',dc:Math.min(92,base+10),bonus:bonusStm,
+           onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You escape immediate danger.'); },
+           onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (grazed)`); }},
+          {text:'Parry and counter',dc:Math.min(96,base+14),bonus:bonusAtk,
+           onSuccess:(r,fx)=>{ r.dust+=5; fx.push('+5 Dust (spoils)'); maybeFindGear(fx); },
+           onFail:(r,fx)=>{ const dmg=Math.max(0,4-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (hit through guard)`); }},
+          {text:'Vault past and strike',dc:Math.min(98,base+20),bonus:r=>bonusAtk(r)+(r.stamina>7?2:0),
+           onSuccess:(r,fx)=>{ r.dust+=7; fx.push('+7 Dust'); maybeFindGear(fx,0.1); },
+           onFail:(r,fx)=>{ const dmg=Math.max(0,6-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (hard fall)`); if(r.stamina>0){r.stamina--;fx.push('-1 Stamina')}}},
+          {text:'Charge for a decisive finisher',dc:Math.min(99,base+26),bonus:r=>bonusAtk(r)+(r.stamina>8?3:0),
+           onSuccess:(r,fx)=>{ r.dust+=10; fx.push('+10 Dust'); maybeFindGear(fx,0.2); },
+           onFail:(r,fx)=>{ const dmg=Math.max(0,8-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (brutal counter)`); if(r.stamina>1){r.stamina-=2;fx.push('-2 Stamina')}}}
+        ];
+      }
+    });
   }
+  function makeTrap(key, text){
+    Scene[key] = (rs)=>({ title:titleFor(rs,'TRAP'), text, tags:baseTags(rs,'TRAP'),
+      buildActions(){ const base=DC(rs,rs.thread.stage);
+        return [
+          {text:'Freeze and ease off the trigger',dc:Math.min(94,base+12),bonus:()=>10,
+           onSuccess:(r,fx)=>{ fx.push('You stabilize the mechanism.'); },
+           onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (trap snaps)`); }},
+          {text:'Sprint clear',dc:Math.min(96,base+16),bonus:bonusStm,
+           onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You dive aside.'); },
+           onFail:(r,fx)=>{ const dmg=Math.max(0,4-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (too slow)`); }},
+          {text:'Raise shield and brace',dc:Math.min(98,base+20),bonus:bonusDef,
+           onSuccess:(r,fx)=>{ fx.push('Impact absorbed.'); },
+           onFail:(r,fx)=>{ const dmg=Math.max(0,5-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (crush)`); }},
+          {text:'Backtrack and skirt the hazard',dc:Math.min(90,base+8),bonus:null,
+           onSuccess:(r,fx)=>{ fx.push('You skirt the hazard.'); },
+           onFail:(r,fx)=>{ fx.push('Dead end—back here again.'); }}
+        ];
+      }
+    });
+  }
+  function makeEnv(key, text, extra){ // extra can inject follow-ups (like flood)
+    Scene[key] = (rs)=>({ title:titleFor(rs,'ENVIRONMENT'), text, tags:baseTags(rs,'ENVIRONMENT'),
+      buildActions(){ const base=DC(rs,rs.thread.stage);
+        const arr = [
+          {text:'Cross carefully along the safest line',dc:Math.min(92,base+10),bonus:null,
+           onSuccess:(r,fx)=>{ fx.push('You make it across.'); },
+           onFail:(r,fx)=>{ const dmg=Math.max(0,2-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (mishap)`); if(extra&&extra.onFailFollow){ extra.onFailFollow(r,fx); } }},
+          {text:'Engineer a quick workaround',dc:Math.min(96,base+14),bonus:bonusStm,
+           onSuccess:(r,fx)=>{ if(r.stamina>0){ r.stamina--; fx.push('-1 Stamina'); } fx.push('Your workaround holds.'); },
+           onFail:(r,fx)=>{ if(r.stamina>0){ r.stamina--; fx.push('-1 Stamina'); } if(extra&&extra.onFailFollow){ extra.onFailFollow(r,fx); } }},
+          {text:'Wait for a better moment',dc:Math.min(85,base+0),bonus:null,
+           onSuccess:(r,fx)=>{ if(state.stash.consumables.food>0 && r.nutrition<10){ state.stash.consumables.food--; r.nutrition++; fx.push('Ate Food: +1 Nutrition'); persist(); } else { fx.push('You conserve energy.'); } },
+           onFail:(r,fx)=>{ fx.push('Conditions worsen.'); if(extra&&extra.onFailFollow){ extra.onFailFollow(r,fx); } }},
+          {text:'Backtrack to a safer route',dc:Math.min(88,base+2),bonus:null,
+           onSuccess:(r,fx)=>{ fx.push('Longer path found.'); },
+           onFail:(r,fx)=>{ fx.push('Dead end again.'); if(extra&&extra.onFailFollow){ extra.onFailFollow(r,fx); } }}
+        ];
+        return arr;
+      }
+    });
+  }
+  function makeChest(key, text){
+    Scene[key] = (rs)=>({ title:titleFor(rs,'CHEST'), text, tags:baseTags(rs,'CHEST'),
+      buildActions(){ const base=DC(rs,rs.thread.stage);
+        return [
+          {text:'Examine for traps',dc:Math.min(92,base+10),bonus:()=>10,onSuccess:(r,fx)=>{fx.push('No trap found.');},onFail:(r,fx)=>{const dmg=Math.max(0,2-r.defense);r.hp-=dmg;fx.push(`-${dmg} HP (needle!)`);}},
+          {text:'Pick the lock',dc:Math.min(96,base+14),bonus:()=>10,onSuccess:(r,fx)=>{r.dust+=5;fx.push('+5 Dust');maybeFindGear(fx);},onFail:(r,fx)=>{fx.push('Lock resists.')}} ,
+          {text:'Pry it open',dc:Math.min(98,base+18),bonus:bonusStm,onSuccess:(r,fx)=>{r.dust+=7;fx.push('+7 Dust');maybeFindGear(fx);},onFail:(r,fx)=>{const dmg=Math.max(0,1-r.defense);r.hp-=dmg;fx.push(`-${dmg} HP (splinter)`);} },
+          {text:'Leave it',dc:Math.min(85,base+0),bonus:null,onSuccess:(r,fx)=>{fx.push('You keep moving.');},onFail:(r,fx)=>{fx.push('Hesitation costs time.');}}
+        ];
+      }
+    });
+  }
+  function makeSearch(key, text){
+    Scene[key] = (rs)=>({ title:titleFor(rs,'SEARCH'), text, tags:baseTags(rs,'SEARCH'),
+      buildActions(){ const base=DC(rs,rs.thread.stage);
+        return [
+          {text:'Rummage quietly',dc:Math.min(94,base+12),bonus:null,onSuccess:(r,fx)=>{r.dust+=3;fx.push('+3 Dust');maybeFindFood(fx);},onFail:(r,fx)=>{fx.push('Nothing useful.');}},
+          {text:'Lift heavy stones',dc:Math.min(98,base+18),bonus:bonusStm,onSuccess:(r,fx)=>{r.dust+=6;fx.push('+6 Dust');maybeFindGear(fx);},onFail:(r,fx)=>{if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');}}},
+          {text:'Probe with a hook',dc:Math.min(95,base+14),bonus:null,onSuccess:(r,fx)=>{r.dust+=2;fx.push('+2 Dust');maybeFindBandage(fx);},onFail:(r,fx)=>{const dmg=Math.max(0,1-r.defense);r.hp-=dmg;fx.push(`-${dmg} HP (shard)`);}},
+          {text:'Move on',dc:Math.min(85,base+0),bonus:null,onSuccess:(r,fx)=>{fx.push('You conserve energy.');},onFail:(r,fx)=>{fx.push('You second-guess yourself.');}}
+        ];
+      }
+    });
+  }
+
+  // ---- Specific coherent chain for flood (as before) ----
+  Scene.ENV_FLOOD = (rs)=>({ title:titleFor(rs,'ENVIRONMENT'), text:'Water surges through a flooded tunnel, tugging at your legs.', tags:baseTags(rs,'ENVIRONMENT'),
+    buildActions(){ const base=DC(rs,rs.thread.stage); return [
+      {text:'Time the surges and wade along the wall', dc:Math.min(95,base+10), bonus:null,
+       onSuccess:(r,fx)=>{fx.push('You reach firm ground.');},
+       onFail:(r,fx)=>{ const dmg=Math.max(0,2-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (slam into stone)`); r.follow={type:'ENV_SWEPT'}; }},
+      {text:'Throw a rope and brace, hauling forward', dc:Math.min(98,base+16), bonus:bonusStm,
+       onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You drag yourself ahead.'); },
+       onFail:(r,fx)=>{ r.follow={type:'ENV_SWEPT'}; fx.push('Grip slips—swept away!'); }},
+      {text:'Crawl the ceiling struts, hand over hand', dc:Math.min(99,base+22), bonus:null,
+       onSuccess:(r,fx)=>{ r.dust+=2; fx.push('+2 Dust (purse on a beam)'); },
+       onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (fall into torrent)`); r.follow={type:'ENV_SWEPT'}; }},
+      {text:'Backtrack to seek a higher route', dc:Math.min(88,base+2), bonus:null,
+       onSuccess:(r,fx)=>{ fx.push('You find a drier detour.'); },
+       onFail:(r,fx)=>{ fx.push('Detour collapses into the same flood.'); r.follow={type:'ENV_SWEPT'}; }}
+    ]; }
+  });
+  Scene.ENV_SWEPT = (rs)=>({ title:titleFor(rs,'ENVIRONMENT'), text:'The current takes you. You smash through foam toward an unknown outlet.', tags:baseTags(rs,'ENVIRONMENT'),
+    buildActions(){ const base=DC(rs,rs.thread.stage,+6); return [
+      {text:'Snare a jutting rock with the rope', dc:Math.min(96,base+12), bonus:bonusStm,
+       onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You haul onto a ledge.'); },
+       onFail:(r,fx)=>{ const dmg=Math.max(0,4-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (dragged underwater)`); r.follow={type:'ENV_WASHED_CAVERN'}; }},
+      {text:'Let the water carry you and curl into a ball', dc:Math.min(92,base+8), bonus:null,
+       onSuccess:(r,fx)=>{ fx.push('You shoot into a wide cistern.'); r.follow={type:'ENV_WASHED_CAVERN'}; },
+       onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (churned)`); r.follow={type:'ENV_WASHED_CAVERN'}; }},
+      {text:'Kick hard for a side eddy', dc:Math.min(98,base+18), bonus:bonusStm,
+       onSuccess:(r,fx)=>{ fx.push('Eddy buys you breath.'); },
+       onFail:(r,fx)=>{ fx.push('Eddy collapses.'); r.follow={type:'ENV_WASHED_CAVERN'}; }},
+      {text:'Use shield/body to bounce off obstacles', dc:Math.min(94,base+10), bonus:bonusDef,
+       onSuccess:(r,fx)=>{ fx.push('You redirect into a calmer chute.'); },
+       onFail:(r,fx)=>{ const dmg=Math.max(0,2-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (ricochet)`); r.follow={type:'ENV_WASHED_CAVERN'}; }}
+    ]; }
+  });
+  Scene.ENV_WASHED_CAVERN = (rs)=>({ title:titleFor(rs,'SEARCH'), text:'You spill into a low cavern strewn with crates and soggy packs.', tags:baseTags(rs,'SEARCH'),
+    buildActions(){ const base=DC(rs,rs.thread.stage); return [
+      {text:'Search the crates quickly', dc:Math.min(95,base+12), bonus:null, onSuccess:(r,fx)=>{ r.dust+=3; fx.push('+3 Dust'); maybeFindBandage(fx); }, onFail:(r,fx)=>{ fx.push('Ruined goods.'); }},
+      {text:'Pry open a sealed coffer', dc:Math.min(98,base+18), bonus:bonusStm, onSuccess:(r,fx)=>{ r.dust+=6; fx.push('+6 Dust'); maybeFindGear(fx); }, onFail:(r,fx)=>{ const dmg=Math.max(0,1-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (splinter)`); }},
+      {text:'Catch your breath on the shore', dc:Math.min(85,base+0), bonus:null, onSuccess:(r,fx)=>{ if(state.stash.consumables.food>0 && r.nutrition<10){state.stash.consumables.food--; r.nutrition++; fx.push('Ate Food: +1 Nutrition'); persist();} else {fx.push('You steady yourself.')} }, onFail:(r,fx)=>{ fx.push('You shiver uncontrollably.'); }},
+      {text:'Move on before trouble arrives', dc:Math.min(88,base+2), bonus:null, onSuccess:(r,fx)=>{ fx.push('You press deeper.'); }, onFail:(r,fx)=>{ fx.push('Too slow—footsteps approach.'); r.follow={type:'COMBAT_GUARDS'}; }}
+    ]; }
+  });
+
+  // ---- More variants (no follow-ups) ----
+  makeCombat('COMBAT_GUARDS','Two guards sprint at you with blades raised.');
+  makeCombat('COMBAT_BEAST','A snarling beast launches from the archway.');
+  makeCombat('COMBAT_SENTINEL','An armoured sentinel lumbers toward you.');
+  makeTrap('TRAP_PLATE','You feel a plate sink beneath your heel. Mechanisms whir.');
+  makeTrap('TRAP_WIRE','A wire twangs—darts prime in the wall.');
+  makeTrap('TRAP_PENDULUM','A pendulum blade begins its swing.');
+  makeEnv('ENV_ROPE_BRIDGE','A rope bridge sways over a black drop.');
+  makeEnv('ENV_QUICKSAND','Quicksand shivers across the path.');
+  makeEnv('ENV_LEDGE','A narrow ledge crumbles beside a chasm.');
+  makeChest('CHEST_ROOM','A bronze chest rests on a cracked dais.');
+  makeChest('CHEST_STRONGBOX','A sealed strongbox bears a family crest.');
+  makeSearch('SEARCH_CACHE','Collapsed masonry hides nooks and alcoves.');
+  makeSearch('SEARCH_SHELVES','Shelves sag with dusty jars and scrap.');
+
+  // Map high-level types → scene variants
+  const TypeToKeys = {
+    environment: ['ENV_FLOOD','ENV_ROPE_BRIDGE','ENV_QUICKSAND','ENV_LEDGE'],
+    combat:      ['COMBAT_GUARDS','COMBAT_BEAST','COMBAT_SENTINEL'],
+    trap:        ['TRAP_PLATE','TRAP_WIRE','TRAP_PENDULUM'],
+    chest:       ['CHEST_ROOM','CHEST_STRONGBOX'],
+    search:      ['SEARCH_CACHE','SEARCH_SHELVES']
+  };
+
+  // Stage-weighted types (unchanged idea, just used to pick a bucket)
+  const TypeWeights = {
+    vault(stage){ if(stage<5) return {environment:3, search:3, trap:2, combat:1};
+                   if(stage<10) return {lock:0, trap:3, environment:2, search:2, combat:1};
+                   if(stage<15) return {trap:3, environment:2, search:2, combat:1};
+                   if(stage<19) return {trap:2, chest:2, combat:2, search:1, environment:1};
+                   return {combat:3, chest:3, trap:2}; },
+    caravan(stage){ if(stage<5) return {environment:3, search:2, combat:1};
+                     if(stage<10) return {combat:2, search:2, chest:1, environment:2};
+                     if(stage<15) return {environment:2, combat:2, search:1};
+                     if(stage<19) return {environment:2, combat:2, chest:2, search:1};
+                     return {combat:2, chest:2, environment:1}; },
+    plague(stage){ if(stage<5) return {search:3, environment:2, trap:1};
+                    if(stage<10) return {environment:3, search:2, trap:1};
+                    if(stage<15) return {search:2, environment:2, trap:1};
+                    if(stage<19) return {environment:2, search:2, combat:1};
+                    return {environment:2, search:2}; }
+  };
+  function weightedPick(weightMap){
+    const entries=Object.entries(weightMap).filter(([,w])=>w>0);
+    const total=entries.reduce((a,[,w])=>a+w,0);
+    let r=Math.random()*total;
+    for(const [k,w] of entries){ r-=w; if(r<=0) return k; }
+    return entries[0][0];
+  }
+
+  // ==== No-repeat scene selection ====
+  function nextSceneKey(rs){
+    const MAX_RECENT=8; // soft cooldown to avoid immediate repeats
+    const used = new Set(rs.usedScenes||[]);
+    const recent = rs.recent||[];
+
+    // If there is a follow-up queued, use it directly
+    if(rs.follow && Scene[rs.follow.type]) return rs.follow.type;
+
+    // choose bucket → pick a variant not used and not in recent
+    const type = weightedPick(TypeWeights[rs.thread.id](rs.thread.stage));
+    const bucket = (TypeToKeys[type]||[]).slice(); // variants for this type
+    shuffle(bucket);
+
+    let pickKey = bucket.find(k=>!used.has(k) && !recent.includes(k));
+    if(!pickKey){
+      // relax: any not used globally
+      const allKeys = Object.keys(Scene);
+      shuffle(allKeys);
+      pickKey = allKeys.find(k=>!used.has(k) && !recent.includes(k));
+    }
+    if(!pickKey){
+      // full reset: clear used and cooldown (we've exhausted the pool this run)
+      rs.usedScenes=[]; rs.recent=[];
+      pickKey = pick(Object.keys(Scene));
+    }
+    // mark
+    rs.usedScenes.push(pickKey);
+    rs.recent.push(pickKey);
+    if(rs.recent.length>MAX_RECENT) rs.recent.shift();
+    return pickKey;
+  }
+  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} }
 
   // ===== UI Elements =====
   const elBal=$('#balance'), elEntry=$('#entryFee'), elPass=$('#pass'), elStart=$('#btnStart'),
@@ -477,20 +515,17 @@
 
   // ===== Flow =====
   function nextScenario(rs){
-    // Follow-up has priority and does NOT advance thread stage
-    if(rs.follow){
-      const sc = Scene[rs.follow.type](rs, rs.follow.context||{});
-      rs.scenario = sc;
-      renderChoices(rs, sc.buildActions());
-      rs.follow = null; // clear; follow-ups can set again
-      return;
+    // Follow-up has priority; do not mark used twice (we still count it to avoid immediate reusing)
+    if(rs.follow && Scene[rs.follow.type]){
+      const key = rs.follow.type;
+      rs.scenario = Scene[key](rs);
+      // mark used
+      rs.usedScenes.push(key); rs.recent.push(key); if(rs.recent.length>8) rs.recent.shift();
+      renderChoices(rs, rs.scenario.buildActions()); rs.follow=null; return;
     }
-    // Otherwise, new stage-driven scene
-    const t=Threads[rs.thread.id]; const st=Math.min(rs.thread.stage,t.stages.length-1);
-    const sceneKey = pickSceneForStage(rs);
-    const sc = Scene[sceneKey](rs,{});
-    rs.scenario=sc;
-    renderChoices(rs, sc.buildActions());
+    const key = nextSceneKey(rs);
+    rs.scenario = Scene[key](rs);
+    renderChoices(rs, rs.scenario.buildActions());
   }
 
   function advanceThread(rs){
@@ -515,8 +550,6 @@
       state.tombstones.unshift({runId:rs.runId,depth:rs.depth,dust:rs.dust,time:Date.now()}); if(state.tombstones.length>50) state.tombstones.pop();
       state.pass=null; state.run=null; persist(); renderTombs(); refreshUI(); return;
     }
-    // Only advance when there was no follow-up queued (nextScenario clears it when used)
-    // If a follow-up is queued now, we don't advance depth again; we call step() which will render the follow-up without incrementing depth.
     advanceThread(rs);
     step();
   }
