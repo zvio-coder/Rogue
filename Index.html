@@ -3,52 +3,47 @@
 <head>
 <meta charset="utf-8" />
 <meta name="viewport" content="width=device-width,initial-scale=1,maximum-scale=1,user-scalable=no" />
-<title>Roguechain — Coherent Scenes • No Repeats • d100 • Dust</title>
+<title>Roguechain — Quest 1: Blackthorn Manor</title>
 <style>
-  :root{--bg:#0b0f14;--panel:#0f1620;--panel2:#0d141d;--ink:#e6edf3;--muted:#9aa5b1;--accent:#72a1ff;--good:#42d392;--bad:#ff6b6b;--edge:#1f2a37;--shadow:0 8px 30px rgba(0,0,0,.45)}
-  *{box-sizing:border-box} html,body{height:100%} body{margin:0;font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;background:var(--bg);color:var(--ink);-webkit-tap-highlight-color:transparent}
-  .wrap{max-width:1024px;margin:0 auto;padding:16px}
-  header{display:flex;flex-wrap:wrap;gap:10px;align-items:center;justify-content:space-between;margin-bottom:12px}
-  .brand{font-weight:800;letter-spacing:.3px;font-size:clamp(16px,2.5vw,20px)}
-  .wallet{display:flex;flex-wrap:wrap;gap:8px;align-items:center}
-  .pill{background:var(--panel);border:1px solid var(--edge);padding:8px 10px;border-radius:10px;display:flex;gap:8px;align-items:center;font-size:14px}
-  button{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px 14px;color:var(--ink);cursor:pointer;font-weight:600}
-  button:active{transform:scale(0.98)} button:hover{border-color:#315a9f} button.primary{background:#1b2736;border-color:#315a9f}
-  main{display:grid;grid-template-columns:1.2fr .8fr;gap:12px} @media (max-width:920px){main{grid-template-columns:1fr}}
-  .card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:12px;box-shadow:var(--shadow)}
-  h2{margin:0 0 8px;font-size:18px}
-  .stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0} @media (max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}}
-  .stat{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:8px;text-align:center;font-size:14px}
-  .choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
-  .choices button{width:100%;text-align:left}
-  .log{max-height:320px;overflow:auto;background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px;font:13px/1.5 ui-monospace,Consolas,Menlo,monospace}
-  .log .good{color:var(--good)} .log .bad{color:var(--bad)}
-  .row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-  .hint{color:var(--muted);font-size:12px} .divider{height:1px;background:var(--edge);margin:8px 0} .muted{color:var(--muted)}
-  .tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
-  .tab{padding:8px 12px;border:1px solid var(--edge);border-radius:999px;background:var(--panel2);cursor:pointer}
-  .tab.active{background:#1b2736;border-color:#315a9f}
-  .scenario{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px}
-  .scenario h3{margin:0 0 6px;font-size:16px} .scenario p{margin:0;color:#c8d0d8}
-  .tag{display:inline-block;background:#1a2432;border:1px solid #2a3a52;border-radius:999px;padding:3px 8px;margin-right:6px;font-size:11px;color:#9fb4d6}
-  .grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px} @media (max-width:600px){.grid{grid-template-columns:1fr}}
-  .item{display:flex;justify-content:space-between;align-items:center;background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:8px}
-  .modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
-  .modal.show{display:flex} .modal .sheet{max-width:560px;width:100%;background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
-  .modal h3{margin:0 0 6px;font-size:18px} .modal .sub{color:var(--muted);font-size:13px;margin-bottom:8px}
-  .die{width:100px;height:100px;border-radius:14px;background:radial-gradient(60% 60% at 50% 45%,#1a2432 0%,#0f1620 100%);border:2px solid var(--edge);
-       display:flex;align-items:center;justify-content:center;font:800 26px/1 ui-monospace,Consolas;color:#b8d3ff;position:relative;user-select:none}
-  .die .label{position:absolute;bottom:4px;left:6px;font:10px/1.2 ui-monospace;color:#9aa5b1}
-  .die.rolling{animation:shake .9s ease-in-out}
-  @keyframes shake{0%{transform:rotate(0)}25%{transform:rotate(6deg)}50%{transform:rotate(-6deg)}75%{transform:rotate(3deg)}100%{transform:rotate(0)}}
-  .outcome{margin-top:12px;background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px}
-  .result{font-weight:800;margin-top:8px} .good{color:var(--good)} .bad{color:var(--bad)}
+:root{--bg:#0b0f14;--panel:#0f1620;--panel2:#0d141d;--ink:#e6edf3;--muted:#9aa5b1;--accent:#72a1ff;--good:#42d392;--bad:#ff6b6b;--edge:#1f2a37;--shadow:0 8px 30px rgba(0,0,0,.45)}
+*{box-sizing:border-box}html,body{height:100%}body{margin:0;background:var(--bg);color:var(--ink);font-family:Inter,system-ui,Segoe UI,Roboto,Arial,sans-serif;-webkit-tap-highlight-color:transparent}
+.wrap{max-width:1024px;margin:0 auto;padding:16px}
+header{display:flex;gap:10px;align-items:center;justify-content:space-between;flex-wrap:wrap;margin-bottom:10px}
+.brand{font-weight:800;font-size:clamp(16px,2.4vw,20px)}
+.wallet{display:flex;gap:8px;align-items:center;flex-wrap:wrap}
+.pill{background:var(--panel);border:1px solid var(--edge);border-radius:10px;padding:8px 10px;font-size:14px}
+button{background:var(--panel2);border:1px solid var(--edge);color:var(--ink);border-radius:12px;padding:10px 14px;font-weight:700;cursor:pointer}
+button:hover{border-color:#315a9f}button:active{transform:scale(.98)}button.primary{background:#1b2736;border-color:#315a9f}
+.tabs{display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.tab{padding:8px 12px;border:1px solid var(--edge);border-radius:999px;background:var(--panel2);cursor:pointer}
+.tab.active{background:#1b2736;border-color:#315a9f}
+main{display:grid;grid-template-columns:1.2fr .8fr;gap:12px}@media(max-width:900px){main{grid-template-columns:1fr}}
+.card{background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:12px;box-shadow:var(--shadow)}
+h2{margin:0 0 8px}
+.row{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:8px 0}@media(max-width:520px){.stats{grid-template-columns:repeat(2,1fr)}}
+.stat{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:8px;text-align:center;font-size:14px}
+.scenario{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px;margin-top:6px}
+.scenario h3{margin:0 0 6px;font-size:16px}.scenario p{margin:0;color:#cbd4df}
+.tag{display:inline-block;padding:3px 8px;border-radius:999px;border:1px solid #2a3a52;background:#1a2432;color:#9fb4d6;font-size:11px;margin-right:6px}
+.choices{display:flex;flex-direction:column;gap:8px;margin-top:8px}
+.log{background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px;max-height:320px;overflow:auto;font:13px/1.5 ui-monospace,Consolas,Menlo,monospace}
+.log .good{color:var(--good)}.log .bad{color:var(--bad)}.muted{color:var(--muted)}.divider{height:1px;background:var(--edge);margin:10px 0}
+.grid{display:grid;grid-template-columns:repeat(2,1fr);gap:8px}@media(max-width:600px){.grid{grid-template-columns:1fr}}
+.item{display:flex;justify-content:space-between;align-items:center;background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:8px}
+.modal{position:fixed;inset:0;background:rgba(0,0,0,.6);display:none;align-items:center;justify-content:center;padding:16px;z-index:50}
+.modal.show{display:flex}.sheet{max-width:560px;width:100%;background:var(--panel);border:1px solid var(--edge);border-radius:14px;padding:16px;box-shadow:var(--shadow)}
+.modal h3{margin:0 0 6px}.modal .sub{color:var(--muted);font-size:13px;margin-bottom:8px}
+.die{width:100px;height:100px;border-radius:14px;background:radial-gradient(60% 60% at 50% 45%,#1a2432 0%,#0f1620 100%);border:2px solid var(--edge);display:flex;align-items:center;justify-content:center;font:800 26px/1 ui-monospace,Consolas;color:#b8d3ff;position:relative;user-select:none}
+.die .label{position:absolute;left:6px;bottom:4px;font:10px/1.2 ui-monospace;color:#9aa5b1}
+.die.rolling{animation:shake .9s ease-in-out}@keyframes shake{0%{transform:rotate(0)}25%{transform:rotate(6deg)}50%{transform:rotate(-6deg)}75%{transform:rotate(3deg)}100%{transform:rotate(0)}}
+.outcome{margin-top:12px;background:var(--panel2);border:1px solid var(--edge);border-radius:12px;padding:10px}.result{font-weight:800;margin-top:8px}.good{color:var(--good)}.bad{color:var(--bad)}
 </style>
 </head>
 <body>
 <div class="wrap">
   <header>
-    <div class="brand">Roguechain — Coherent Scenes • No Repeats • d100 • Dust</div>
+    <div class="brand">Roguechain — Quest 1: Blackthorn Manor (scripted)</div>
     <div class="wallet">
       <div class="pill" id="balance">Wallet: 0 Dust</div>
       <button id="btnFaucet">Add Test Dust</button>
@@ -62,11 +57,10 @@
   </div>
 
   <main>
-    <!-- PLAY -->
     <section class="card" id="playCard">
-      <h2>Adventure</h2>
+      <h2>Blackthorn Manor — Story Mode</h2>
       <div class="row">
-        <button id="btnStart" class="primary">Start Run (Pay Entry / Use Amulet)</button>
+        <button id="btnStart" class="primary">Start Quest (Pay Entry / Use Amulet)</button>
         <div class="pill" id="entryFee">Entry fee: 5 Dust</div>
         <div class="pill" id="pass">No Pass</div>
       </div>
@@ -77,30 +71,23 @@
         <div class="stat">Nutrition<div id="sNU">—</div></div>
         <div class="stat">Defense<div id="sDF">—</div></div>
         <div class="stat">Dust<div id="sDU">—</div></div>
-        <div class="stat">Depth<div id="sD">—</div></div>
-      </div>
-
-      <div id="campRow" class="row" style="display:none">
-        <button id="btnRetire">Retire at Camp (Bank Dust)</button>
-        <span class="hint">Camps appear every 4 depths.</span>
+        <div class="stat">Stage<div id="sSTAGE">—</div></div>
       </div>
 
       <div class="scenario" id="scenarioBox" style="display:none">
         <div class="row" style="justify-content:space-between;align-items:center">
-          <h3 id="scTitle" style="margin:0">—</h3>
+          <h3 id="scTitle">—</h3>
           <div id="scTags"></div>
         </div>
         <p id="scText">—</p>
       </div>
 
-      <div class="divider"></div>
       <div class="choices" id="choices"></div>
 
       <div class="divider"></div>
       <div class="log" id="log"></div>
     </section>
 
-    <!-- INVENTORY -->
     <section class="card" id="invCard" style="display:none">
       <h2>Inventory & Loadout</h2>
       <div class="row">
@@ -123,15 +110,16 @@
 
       <h3>Consumables</h3>
       <div id="consumablesGrid" class="grid"></div>
-      <p class="hint">Bandages heal HP; Food restores Nutrition. Equipped gear persists between runs unless you die.</p>
+      <p class="muted">Bandages heal HP; Food restores Nutrition. Equipped gear persists unless you die.</p>
     </section>
 
     <aside class="card">
-      <h2>No more repeats</h2>
+      <h2>How this works</h2>
       <ul class="muted">
-        <li>Run tracks a **usedScenes** set + recent cooldown → no duplicate scene keys until pool is exhausted.</li>
-        <li>Scene **variants** per type keep options contextual (combat, traps, environment, chest, search…).</li>
-        <li>Flood chain still has coherent follow-ups (swept → washed cavern → …).</li>
+        <li>Fully scripted quest: every action → fixed next scene.</li>
+        <li>Animated d100, bonuses from gear/flags, effects applied automatically.</li>
+        <li>Dust + loot only when it makes story sense.</li>
+        <li>Escape with loot at the Epilogue; 2% chance of **Extreme Loot**.</li>
       </ul>
       <div class="divider"></div>
       <h2>Tombstones</h2>
@@ -139,7 +127,7 @@
     </aside>
   </main>
 
-  <p class="hint" style="margin-top:10px">Saves locally (localStorage). Currency: <b>Dust</b>.</p>
+  <p class="muted" style="margin-top:10px">Saves locally (localStorage). Currency: <b>Dust</b>. Token name is <b>Dust</b>.</p>
 </div>
 
 <!-- Dice Modal -->
@@ -150,15 +138,15 @@
     <div class="row" style="align-items:center;gap:14px">
       <div class="die" id="mDie" role="button" aria-label="Roll d100"><span class="value">d100</span><span class="label">d100</span></div>
       <div>
-        <div id="mDC" class="hint">Tap die to roll</div>
-        <div id="mBonus" class="hint">—</div>
+        <div id="mDC" class="muted">Tap die to roll</div>
+        <div id="mBonus" class="muted">—</div>
       </div>
     </div>
     <div class="outcome" id="mOutcome" style="display:none">
       <div id="mResult" class="result">—</div>
       <ul id="mEffects" style="margin:6px 0 0 18px"></ul>
     </div>
-    <div class="row" style="margin-top:12px;justify-content:flex-end">
+    <div class="row" style="justify-content:flex-end;margin-top:10px">
       <button id="mClose" style="display:none">Continue</button>
       <button id="mCancel">Cancel</button>
     </div>
@@ -167,400 +155,484 @@
 
 <script>
 (function(){
-  // ===== Helpers & Storage =====
+  // ---------- storage & helpers ----------
   const $=s=>document.querySelector(s);
   const todayStr=()=>new Date().toISOString().slice(0,10);
-  const store={ key:'rc-scenes-norepeat-v1', load(){try{return JSON.parse(localStorage.getItem(this.key)||'{}')}catch(_){return{}}}, save(o){localStorage.setItem(this.key,JSON.stringify(o))} };
+  const storeKey='rc-quest1-v1';
+  const load=()=>{try{return JSON.parse(localStorage.getItem(storeKey)||'{}')}catch(_){return {}}};
+  const save=o=>localStorage.setItem(storeKey,JSON.stringify(o));
 
-  // ===== Catalog =====
-  const WEAPONS=[{id:'rust_dagger',name:'Rusty Dagger',atk:2,hp:0},{id:'short_sword',name:'Short Sword',atk:5,hp:0},{id:'warblade',name:'Warblade',atk:10,hp:1}];
-  const ARMOURS=[{id:'leather',name:'Leather Jerkin',def:2,hp:0},{id:'chain',name:'Chain Shirt',def:4,hp:1},{id:'tower',name:'Tower Shield',def:6,hp:0}];
+  // ---------- gear catalog ----------
+  const WEAPONS=[{id:'rust_dagger',name:'Rusty Dagger',atk:2,hp:0},
+                 {id:'club',name:'Club',atk:3,hp:0},
+                 {id:'knife',name:'Kitchen Knife',atk:4,hp:0},
+                 {id:'short_sword',name:'Short Sword',atk:5,hp:0},
+                 {id:'warblade',name:'Warblade',atk:10,hp:1},
+                 {id:'mythic_warblade',name:'Mythic Warblade',atk:15,hp:2}];
+  const ARMOURS=[{id:'makeshift',name:'Makeshift Shield',def:1,hp:0},
+                 {id:'light',name:'Light Armor',def:2,hp:0},
+                 {id:'chain',name:'Chain Shirt',def:4,hp:1},
+                 {id:'tower',name:'Tower Shield',def:6,hp:0},
+                 {id:'imperial_cuirass',name:'Imperial Cuirass',def:10,hp:2}];
 
-  // ===== Persistent State =====
+  // ---------- persistent meta ----------
   const state={
     walletDust:0,tombstones:[],
-    stash:{weapons:['rust_dagger'],armours:['leather'],trinkets:[],consumables:{bandage:1,food:1},equip:{weapon:'rust_dagger',armour:'leather'},amulet:{have:false,lastUsed:''}},
+    stash:{weapons:['rust_dagger'],armours:[],trinkets:[],consumables:{bandage:1,food:1},equip:{weapon:'rust_dagger',armour:null},amulet:{have:false,lastUsed:''}},
     pass:null, run:null
   };
-  Object.assign(state,store.load());
-  if(!state.stash) state.stash={weapons:['rust_dagger'],armours:['leather'],trinkets:[],consumables:{bandage:1,food:1},equip:{weapon:'rust_dagger',armour:'leather'},amulet:{have:false,lastUsed:''}};
-  if(!Array.isArray(state.tombstones)) state.tombstones=[];
-  function persist(){store.save({walletDust:state.walletDust,tombstones:state.tombstones,stash:state.stash});}
+  Object.assign(state,load());
+  if(!state.stash) state.stash={weapons:['rust_dagger'],armours:[],trinkets:[],consumables:{bandage:1,food:1},equip:{weapon:'rust_dagger',armour:null},amulet:{have:false,lastUsed:''}};
+  function persist(){ save({walletDust:state.walletDust,tombstones:state.tombstones,stash:state.stash}); }
 
-  // ===== Gear/Run =====
-  function gearStats(){const w=WEAPONS.find(x=>x.id===state.stash.equip.weapon)||{};const a=ARMOURS.find(x=>x.id===state.stash.equip.armour)||{};return{atk:w.atk||0,def:a.def||0,hp:(w.hp||0)+(a.hp||0)}}
-  function newRun(id){const g=gearStats();return{runId:id,depth:0,alive:true,hp:10+g.hp,stamina:8,nutrition:6,defense:g.def,dust:0,gAtk:g.atk,log:[],scenario:null,thread:pickThread(),follow:null,usedScenes:[],recent:[]};}
-  function addLog(r,m,cls){r.log.push(`<span class="${cls||''}">${m}</span>`);} function isCampDepth(d){return d>0&&d%4===0;}
-
-  // ===== Threads (20) =====
-  const Threads={
-    vault:{name:'Ancient Vault',stages:['Old Map & Distant Spurs','Echoing Gulch','Fallen Menhirs','Thorned Cut','Overwatch Ridge','The Sealed Door','Breather Shafts','Whispering Statues','Rust-locked Wedges','First Descent','Hall of Plates','Dart Gallery','Mirror Antechamber','Weeping Ceiling','Backdoor Chute','Glyph-lock','Antechamber of Echoes','The Relic’s Guard','Counterweight Riddle','Break or Bypass']},
-    caravan:{name:'Caravan Rescue',stages:['Smoke on the Road','Broken Axles','Scout the Verge','Night Watch','Trail the Raiders','Ravine Overlook','Sabotage the Tethers','Poison the Pot','Free the Prisoners','Stampede Diversion','Regroup in the Dunes','Broker Safe Passage','Bridge of Ropes','Shadow Pursuit','River Ford','Rain & Mud','Town Gates','Reclaim the Wares','Guard the Market','Honor Paid']},
-    plague:{name:'Plague in the Fen',stages:['Sickly Village','Symptoms & Rumors','Quarantine Tents','Herb-Gathering','Well Inspection','Tannery Vents','Waste Channels','Foreman’s Ledger','Find the Source','Seal the Vats','Brewroom Setup','Torchlit Distillation','Test Doses','Triage','Supply Run','Backlash','Relief Routes','Crowd Control','Clean Water Plan','Plague Eases']}
-  };
-  function pick(a){return a[Math.floor(Math.random()*a.length)]}
-  function pickThread(){const id=pick(['vault','caravan','plague']);return{id,stage:0}}
-
-  // ===== Scene Engine =====
-  const Scene={}; // registry
-
-  const DC = (rs,stage,hardness=0)=> 45 + Math.min(20, Math.floor(rs.depth*0.7)) + Math.floor(stage/2) + hardness;
-  const bonusAtk = r=> r.gAtk||0;
-  const bonusStm = r=> Math.max(0,r.stamina-6);
-  const bonusDef = r=> Math.floor(r.defense/2);
-
-  // Utility tags/titles
-  function baseTags(rs,kind){const t=Threads[rs.thread.id];return [t.name,`Stage ${Math.min(rs.thread.stage+1,t.stages.length)}`,kind]}
-  function titleFor(rs,kind){const t=Threads[rs.thread.id];const st=t.stages[Math.min(rs.thread.stage,t.stages.length-1)];return `${t.name} — ${st}`}
-
-  // ---- Loot helpers ----
-  function dropAmulet(e){ if(!state.stash.amulet.have){state.stash.amulet.have=true;state.stash.trinkets.push('amulet_of_life');e.push('ULTRA RARE: Amulet of Life (1 free entry/day)');} else {state.run.dust+=10;e.push('+10 Dust (relic shards)');} }
-  function maybeFindGear(e,rarityBoost=0){const r=Math.random(); if(r<0.5-rarityBoost){const w=pick(WEAPONS); if(!state.stash.weapons.includes(w.id)){state.stash.weapons.push(w.id);e.push(`FOUND weapon: ${w.name}`);} else {state.run.dust+=2;e.push('Duplicate weapon → +2 Dust');}}
-    else if(r<0.98){const a=pick(ARMOURS); if(!state.stash.armours.includes(a.id)){state.stash.armours.push(a.id);e.push(`FOUND armour: ${a.name}`);} else {state.run.dust+=2;e.push('Duplicate armour → +2 Dust');}}
-    else dropAmulet(e); persist(); }
-  function maybeFindBandage(e){ if(Math.random()<0.5){state.stash.consumables.bandage=(state.stash.consumables.bandage||0)+1; e.push('FOUND: Bandage'); persist();}}
-  function maybeFindFood(e){ if(Math.random()<0.5){state.stash.consumables.food=(state.stash.consumables.food||0)+1; e.push('FOUND: Food'); persist();}}
-
-  // ---- Factories for quick, contextual variants ----
-  function makeCombat(key, text){
-    Scene[key] = (rs)=>({ title:titleFor(rs,'COMBAT'), text, tags:baseTags(rs,'COMBAT'),
-      buildActions(){ const base=DC(rs,rs.thread.stage);
-        return [
-          {text:'Dodge wide and break away',dc:Math.min(92,base+10),bonus:bonusStm,
-           onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You escape immediate danger.'); },
-           onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (grazed)`); }},
-          {text:'Parry and counter',dc:Math.min(96,base+14),bonus:bonusAtk,
-           onSuccess:(r,fx)=>{ r.dust+=5; fx.push('+5 Dust (spoils)'); maybeFindGear(fx); },
-           onFail:(r,fx)=>{ const dmg=Math.max(0,4-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (hit through guard)`); }},
-          {text:'Vault past and strike',dc:Math.min(98,base+20),bonus:r=>bonusAtk(r)+(r.stamina>7?2:0),
-           onSuccess:(r,fx)=>{ r.dust+=7; fx.push('+7 Dust'); maybeFindGear(fx,0.1); },
-           onFail:(r,fx)=>{ const dmg=Math.max(0,6-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (hard fall)`); if(r.stamina>0){r.stamina--;fx.push('-1 Stamina')}}},
-          {text:'Charge for a decisive finisher',dc:Math.min(99,base+26),bonus:r=>bonusAtk(r)+(r.stamina>8?3:0),
-           onSuccess:(r,fx)=>{ r.dust+=10; fx.push('+10 Dust'); maybeFindGear(fx,0.2); },
-           onFail:(r,fx)=>{ const dmg=Math.max(0,8-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (brutal counter)`); if(r.stamina>1){r.stamina-=2;fx.push('-2 Stamina')}}}
-        ];
-      }
-    });
-  }
-  function makeTrap(key, text){
-    Scene[key] = (rs)=>({ title:titleFor(rs,'TRAP'), text, tags:baseTags(rs,'TRAP'),
-      buildActions(){ const base=DC(rs,rs.thread.stage);
-        return [
-          {text:'Freeze and ease off the trigger',dc:Math.min(94,base+12),bonus:()=>10,
-           onSuccess:(r,fx)=>{ fx.push('You stabilize the mechanism.'); },
-           onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (trap snaps)`); }},
-          {text:'Sprint clear',dc:Math.min(96,base+16),bonus:bonusStm,
-           onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You dive aside.'); },
-           onFail:(r,fx)=>{ const dmg=Math.max(0,4-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (too slow)`); }},
-          {text:'Raise shield and brace',dc:Math.min(98,base+20),bonus:bonusDef,
-           onSuccess:(r,fx)=>{ fx.push('Impact absorbed.'); },
-           onFail:(r,fx)=>{ const dmg=Math.max(0,5-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (crush)`); }},
-          {text:'Backtrack and skirt the hazard',dc:Math.min(90,base+8),bonus:null,
-           onSuccess:(r,fx)=>{ fx.push('You skirt the hazard.'); },
-           onFail:(r,fx)=>{ fx.push('Dead end—back here again.'); }}
-        ];
-      }
-    });
-  }
-  function makeEnv(key, text, extra){ // extra can inject follow-ups (like flood)
-    Scene[key] = (rs)=>({ title:titleFor(rs,'ENVIRONMENT'), text, tags:baseTags(rs,'ENVIRONMENT'),
-      buildActions(){ const base=DC(rs,rs.thread.stage);
-        const arr = [
-          {text:'Cross carefully along the safest line',dc:Math.min(92,base+10),bonus:null,
-           onSuccess:(r,fx)=>{ fx.push('You make it across.'); },
-           onFail:(r,fx)=>{ const dmg=Math.max(0,2-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (mishap)`); if(extra&&extra.onFailFollow){ extra.onFailFollow(r,fx); } }},
-          {text:'Engineer a quick workaround',dc:Math.min(96,base+14),bonus:bonusStm,
-           onSuccess:(r,fx)=>{ if(r.stamina>0){ r.stamina--; fx.push('-1 Stamina'); } fx.push('Your workaround holds.'); },
-           onFail:(r,fx)=>{ if(r.stamina>0){ r.stamina--; fx.push('-1 Stamina'); } if(extra&&extra.onFailFollow){ extra.onFailFollow(r,fx); } }},
-          {text:'Wait for a better moment',dc:Math.min(85,base+0),bonus:null,
-           onSuccess:(r,fx)=>{ if(state.stash.consumables.food>0 && r.nutrition<10){ state.stash.consumables.food--; r.nutrition++; fx.push('Ate Food: +1 Nutrition'); persist(); } else { fx.push('You conserve energy.'); } },
-           onFail:(r,fx)=>{ fx.push('Conditions worsen.'); if(extra&&extra.onFailFollow){ extra.onFailFollow(r,fx); } }},
-          {text:'Backtrack to a safer route',dc:Math.min(88,base+2),bonus:null,
-           onSuccess:(r,fx)=>{ fx.push('Longer path found.'); },
-           onFail:(r,fx)=>{ fx.push('Dead end again.'); if(extra&&extra.onFailFollow){ extra.onFailFollow(r,fx); } }}
-        ];
-        return arr;
-      }
-    });
-  }
-  function makeChest(key, text){
-    Scene[key] = (rs)=>({ title:titleFor(rs,'CHEST'), text, tags:baseTags(rs,'CHEST'),
-      buildActions(){ const base=DC(rs,rs.thread.stage);
-        return [
-          {text:'Examine for traps',dc:Math.min(92,base+10),bonus:()=>10,onSuccess:(r,fx)=>{fx.push('No trap found.');},onFail:(r,fx)=>{const dmg=Math.max(0,2-r.defense);r.hp-=dmg;fx.push(`-${dmg} HP (needle!)`);}},
-          {text:'Pick the lock',dc:Math.min(96,base+14),bonus:()=>10,onSuccess:(r,fx)=>{r.dust+=5;fx.push('+5 Dust');maybeFindGear(fx);},onFail:(r,fx)=>{fx.push('Lock resists.')}} ,
-          {text:'Pry it open',dc:Math.min(98,base+18),bonus:bonusStm,onSuccess:(r,fx)=>{r.dust+=7;fx.push('+7 Dust');maybeFindGear(fx);},onFail:(r,fx)=>{const dmg=Math.max(0,1-r.defense);r.hp-=dmg;fx.push(`-${dmg} HP (splinter)`);} },
-          {text:'Leave it',dc:Math.min(85,base+0),bonus:null,onSuccess:(r,fx)=>{fx.push('You keep moving.');},onFail:(r,fx)=>{fx.push('Hesitation costs time.');}}
-        ];
-      }
-    });
-  }
-  function makeSearch(key, text){
-    Scene[key] = (rs)=>({ title:titleFor(rs,'SEARCH'), text, tags:baseTags(rs,'SEARCH'),
-      buildActions(){ const base=DC(rs,rs.thread.stage);
-        return [
-          {text:'Rummage quietly',dc:Math.min(94,base+12),bonus:null,onSuccess:(r,fx)=>{r.dust+=3;fx.push('+3 Dust');maybeFindFood(fx);},onFail:(r,fx)=>{fx.push('Nothing useful.');}},
-          {text:'Lift heavy stones',dc:Math.min(98,base+18),bonus:bonusStm,onSuccess:(r,fx)=>{r.dust+=6;fx.push('+6 Dust');maybeFindGear(fx);},onFail:(r,fx)=>{if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');}}},
-          {text:'Probe with a hook',dc:Math.min(95,base+14),bonus:null,onSuccess:(r,fx)=>{r.dust+=2;fx.push('+2 Dust');maybeFindBandage(fx);},onFail:(r,fx)=>{const dmg=Math.max(0,1-r.defense);r.hp-=dmg;fx.push(`-${dmg} HP (shard)`);}},
-          {text:'Move on',dc:Math.min(85,base+0),bonus:null,onSuccess:(r,fx)=>{fx.push('You conserve energy.');},onFail:(r,fx)=>{fx.push('You second-guess yourself.');}}
-        ];
-      }
-    });
+  // ---------- dice modal ----------
+  const modal=$('#diceModal'), mTitle=$('#mTitle'), mSubtitle=$('#mSubtitle'), mDie=$('#mDie'), mDC=$('#mDC'), mBonus=$('#mBonus'), mOutcome=$('#mOutcome'), mResult=$('#mResult'), mEffects=$('#mEffects'), mClose=$('#mClose'), mCancel=$('#mCancel');
+  const mVal=()=>mDie.querySelector('.value');
+  const openModal=()=>{modal.classList.add('show'); mOutcome.style.display='none'; mClose.style.display='none';}
+  const closeModal=()=>modal.classList.remove('show');
+  function animateRoll(done){ mDie.classList.add('rolling'); let t=0; const dur=900, step=60;
+    (function tick(){ t+=step; mVal().textContent=(1+Math.floor(Math.random()*100)).toString().padStart(2,'0');
+      if(t>=dur){ const final=1+Math.floor(Math.random()*100); mVal().textContent=final.toString().padStart(2,'0'); mDie.classList.remove('rolling'); done(final); }
+      else setTimeout(tick,step);
+    })();
   }
 
-  // ---- Specific coherent chain for flood (as before) ----
-  Scene.ENV_FLOOD = (rs)=>({ title:titleFor(rs,'ENVIRONMENT'), text:'Water surges through a flooded tunnel, tugging at your legs.', tags:baseTags(rs,'ENVIRONMENT'),
-    buildActions(){ const base=DC(rs,rs.thread.stage); return [
-      {text:'Time the surges and wade along the wall', dc:Math.min(95,base+10), bonus:null,
-       onSuccess:(r,fx)=>{fx.push('You reach firm ground.');},
-       onFail:(r,fx)=>{ const dmg=Math.max(0,2-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (slam into stone)`); r.follow={type:'ENV_SWEPT'}; }},
-      {text:'Throw a rope and brace, hauling forward', dc:Math.min(98,base+16), bonus:bonusStm,
-       onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You drag yourself ahead.'); },
-       onFail:(r,fx)=>{ r.follow={type:'ENV_SWEPT'}; fx.push('Grip slips—swept away!'); }},
-      {text:'Crawl the ceiling struts, hand over hand', dc:Math.min(99,base+22), bonus:null,
-       onSuccess:(r,fx)=>{ r.dust+=2; fx.push('+2 Dust (purse on a beam)'); },
-       onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (fall into torrent)`); r.follow={type:'ENV_SWEPT'}; }},
-      {text:'Backtrack to seek a higher route', dc:Math.min(88,base+2), bonus:null,
-       onSuccess:(r,fx)=>{ fx.push('You find a drier detour.'); },
-       onFail:(r,fx)=>{ fx.push('Detour collapses into the same flood.'); r.follow={type:'ENV_SWEPT'}; }}
-    ]; }
-  });
-  Scene.ENV_SWEPT = (rs)=>({ title:titleFor(rs,'ENVIRONMENT'), text:'The current takes you. You smash through foam toward an unknown outlet.', tags:baseTags(rs,'ENVIRONMENT'),
-    buildActions(){ const base=DC(rs,rs.thread.stage,+6); return [
-      {text:'Snare a jutting rock with the rope', dc:Math.min(96,base+12), bonus:bonusStm,
-       onSuccess:(r,fx)=>{ if(r.stamina>0){r.stamina--;fx.push('-1 Stamina');} fx.push('You haul onto a ledge.'); },
-       onFail:(r,fx)=>{ const dmg=Math.max(0,4-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (dragged underwater)`); r.follow={type:'ENV_WASHED_CAVERN'}; }},
-      {text:'Let the water carry you and curl into a ball', dc:Math.min(92,base+8), bonus:null,
-       onSuccess:(r,fx)=>{ fx.push('You shoot into a wide cistern.'); r.follow={type:'ENV_WASHED_CAVERN'}; },
-       onFail:(r,fx)=>{ const dmg=Math.max(0,3-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (churned)`); r.follow={type:'ENV_WASHED_CAVERN'}; }},
-      {text:'Kick hard for a side eddy', dc:Math.min(98,base+18), bonus:bonusStm,
-       onSuccess:(r,fx)=>{ fx.push('Eddy buys you breath.'); },
-       onFail:(r,fx)=>{ fx.push('Eddy collapses.'); r.follow={type:'ENV_WASHED_CAVERN'}; }},
-      {text:'Use shield/body to bounce off obstacles', dc:Math.min(94,base+10), bonus:bonusDef,
-       onSuccess:(r,fx)=>{ fx.push('You redirect into a calmer chute.'); },
-       onFail:(r,fx)=>{ const dmg=Math.max(0,2-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (ricochet)`); r.follow={type:'ENV_WASHED_CAVERN'}; }}
-    ]; }
-  });
-  Scene.ENV_WASHED_CAVERN = (rs)=>({ title:titleFor(rs,'SEARCH'), text:'You spill into a low cavern strewn with crates and soggy packs.', tags:baseTags(rs,'SEARCH'),
-    buildActions(){ const base=DC(rs,rs.thread.stage); return [
-      {text:'Search the crates quickly', dc:Math.min(95,base+12), bonus:null, onSuccess:(r,fx)=>{ r.dust+=3; fx.push('+3 Dust'); maybeFindBandage(fx); }, onFail:(r,fx)=>{ fx.push('Ruined goods.'); }},
-      {text:'Pry open a sealed coffer', dc:Math.min(98,base+18), bonus:bonusStm, onSuccess:(r,fx)=>{ r.dust+=6; fx.push('+6 Dust'); maybeFindGear(fx); }, onFail:(r,fx)=>{ const dmg=Math.max(0,1-r.defense); r.hp-=dmg; fx.push(`-${dmg} HP (splinter)`); }},
-      {text:'Catch your breath on the shore', dc:Math.min(85,base+0), bonus:null, onSuccess:(r,fx)=>{ if(state.stash.consumables.food>0 && r.nutrition<10){state.stash.consumables.food--; r.nutrition++; fx.push('Ate Food: +1 Nutrition'); persist();} else {fx.push('You steady yourself.')} }, onFail:(r,fx)=>{ fx.push('You shiver uncontrollably.'); }},
-      {text:'Move on before trouble arrives', dc:Math.min(88,base+2), bonus:null, onSuccess:(r,fx)=>{ fx.push('You press deeper.'); }, onFail:(r,fx)=>{ fx.push('Too slow—footsteps approach.'); r.follow={type:'COMBAT_GUARDS'}; }}
-    ]; }
-  });
-
-  // ---- More variants (no follow-ups) ----
-  makeCombat('COMBAT_GUARDS','Two guards sprint at you with blades raised.');
-  makeCombat('COMBAT_BEAST','A snarling beast launches from the archway.');
-  makeCombat('COMBAT_SENTINEL','An armoured sentinel lumbers toward you.');
-  makeTrap('TRAP_PLATE','You feel a plate sink beneath your heel. Mechanisms whir.');
-  makeTrap('TRAP_WIRE','A wire twangs—darts prime in the wall.');
-  makeTrap('TRAP_PENDULUM','A pendulum blade begins its swing.');
-  makeEnv('ENV_ROPE_BRIDGE','A rope bridge sways over a black drop.');
-  makeEnv('ENV_QUICKSAND','Quicksand shivers across the path.');
-  makeEnv('ENV_LEDGE','A narrow ledge crumbles beside a chasm.');
-  makeChest('CHEST_ROOM','A bronze chest rests on a cracked dais.');
-  makeChest('CHEST_STRONGBOX','A sealed strongbox bears a family crest.');
-  makeSearch('SEARCH_CACHE','Collapsed masonry hides nooks and alcoves.');
-  makeSearch('SEARCH_SHELVES','Shelves sag with dusty jars and scrap.');
-
-  // Map high-level types → scene variants
-  const TypeToKeys = {
-    environment: ['ENV_FLOOD','ENV_ROPE_BRIDGE','ENV_QUICKSAND','ENV_LEDGE'],
-    combat:      ['COMBAT_GUARDS','COMBAT_BEAST','COMBAT_SENTINEL'],
-    trap:        ['TRAP_PLATE','TRAP_WIRE','TRAP_PENDULUM'],
-    chest:       ['CHEST_ROOM','CHEST_STRONGBOX'],
-    search:      ['SEARCH_CACHE','SEARCH_SHELVES']
-  };
-
-  // Stage-weighted types (unchanged idea, just used to pick a bucket)
-  const TypeWeights = {
-    vault(stage){ if(stage<5) return {environment:3, search:3, trap:2, combat:1};
-                   if(stage<10) return {lock:0, trap:3, environment:2, search:2, combat:1};
-                   if(stage<15) return {trap:3, environment:2, search:2, combat:1};
-                   if(stage<19) return {trap:2, chest:2, combat:2, search:1, environment:1};
-                   return {combat:3, chest:3, trap:2}; },
-    caravan(stage){ if(stage<5) return {environment:3, search:2, combat:1};
-                     if(stage<10) return {combat:2, search:2, chest:1, environment:2};
-                     if(stage<15) return {environment:2, combat:2, search:1};
-                     if(stage<19) return {environment:2, combat:2, chest:2, search:1};
-                     return {combat:2, chest:2, environment:1}; },
-    plague(stage){ if(stage<5) return {search:3, environment:2, trap:1};
-                    if(stage<10) return {environment:3, search:2, trap:1};
-                    if(stage<15) return {search:2, environment:2, trap:1};
-                    if(stage<19) return {environment:2, search:2, combat:1};
-                    return {environment:2, search:2}; }
-  };
-  function weightedPick(weightMap){
-    const entries=Object.entries(weightMap).filter(([,w])=>w>0);
-    const total=entries.reduce((a,[,w])=>a+w,0);
-    let r=Math.random()*total;
-    for(const [k,w] of entries){ r-=w; if(r<=0) return k; }
-    return entries[0][0];
-  }
-
-  // ==== No-repeat scene selection ====
-  function nextSceneKey(rs){
-    const MAX_RECENT=8; // soft cooldown to avoid immediate repeats
-    const used = new Set(rs.usedScenes||[]);
-    const recent = rs.recent||[];
-
-    // If there is a follow-up queued, use it directly
-    if(rs.follow && Scene[rs.follow.type]) return rs.follow.type;
-
-    // choose bucket → pick a variant not used and not in recent
-    const type = weightedPick(TypeWeights[rs.thread.id](rs.thread.stage));
-    const bucket = (TypeToKeys[type]||[]).slice(); // variants for this type
-    shuffle(bucket);
-
-    let pickKey = bucket.find(k=>!used.has(k) && !recent.includes(k));
-    if(!pickKey){
-      // relax: any not used globally
-      const allKeys = Object.keys(Scene);
-      shuffle(allKeys);
-      pickKey = allKeys.find(k=>!used.has(k) && !recent.includes(k));
-    }
-    if(!pickKey){
-      // full reset: clear used and cooldown (we've exhausted the pool this run)
-      rs.usedScenes=[]; rs.recent=[];
-      pickKey = pick(Object.keys(Scene));
-    }
-    // mark
-    rs.usedScenes.push(pickKey);
-    rs.recent.push(pickKey);
-    if(rs.recent.length>MAX_RECENT) rs.recent.shift();
-    return pickKey;
-  }
-  function shuffle(a){ for(let i=a.length-1;i>0;i--){ const j=Math.floor(Math.random()*(i+1)); [a[i],a[j]]=[a[j],a[i]];} }
-
-  // ===== UI Elements =====
+  // ---------- UI elements ----------
   const elBal=$('#balance'), elEntry=$('#entryFee'), elPass=$('#pass'), elStart=$('#btnStart'),
-        elFaucet=$('#btnFaucet'), elWithdraw=$('#btnWithdraw'), elRetire=$('#btnRetire'), elCampRow=$('#campRow'),
-        elChoices=$('#choices'), elLog=$('#log'), elTombs=$('#tombstones'),
-        sHP=$('#sHP'), sST=$('#sST'), sNU=$('#sNU'), sDF=$('#sDF'), sDU=$('#sDU'), sD=$('#sD'),
-        scBox=$('#scenarioBox'), scTitle=$('#scTitle'), scText=$('#scText'), scTags=$('#scTags');
+        sHP=$('#sHP'), sST=$('#sST'), sNU=$('#sNU'), sDF=$('#sDF'), sDU=$('#sDU'), sSTAGE=$('#sSTAGE'),
+        scBox=$('#scenarioBox'), scTitle=$('#scTitle'), scText=$('#scText'), scTags=$('#scTags'), choicesEl=$('#choices'), logEl=$('#log'),
+        tabPlay=$('#tabPlay'), tabInv=$('#tabInventory'), playCard=$('#playCard'), invCard=$('#invCard'),
+        weaponsGrid=$('#weaponsGrid'), armoursGrid=$('#armoursGrid'), trinketsGrid=$('#trinketsGrid'), consumablesGrid=$('#consumablesGrid'),
+        amuletInfo=$('#amuletInfo'), entryInfo=$('#entryInfo'), tombsEl=$('#tombstones');
 
-  // Tabs & inventory
-  const tabPlay=$('#tabPlay'), tabInv=$('#tabInventory'), playCard=$('#playCard'), invCard=$('#invCard');
-  const weaponsGrid=$('#weaponsGrid'), armoursGrid=$('#armoursGrid'), trinketsGrid=$('#trinketsGrid'), consumablesGrid=$('#consumablesGrid'),
-        amuletInfo=$('#amuletInfo'), entryInfo=$('#entryInfo');
-
-  // Modal
-  const modal=$('#diceModal'), mTitle=$('#mTitle'), mSubtitle=$('#mSubtitle'),
-        mDie=$('#mDie'), mVal=()=>mDie.querySelector('.value'),
-        mDC=$('#mDC'), mBonus=$('#mBonus'), mOutcome=$('#mOutcome'),
-        mResult=$('#mResult'), mEffects=$('#mEffects'), mClose=$('#mClose'), mCancel=$('#mCancel');
-
-  // ===== Wallet / Entry =====
+  // ---------- wallet controls ----------
   const ENTRY_FEE=5;
   function updateWallet(){elBal.textContent=`Wallet: ${state.walletDust} Dust`;}
-  function freeEntryAvailable(){return state.stash.amulet.have && state.stash.amulet.lastUsed!==todayStr();}
+  $('#btnFaucet').onclick=()=>{state.walletDust+=20; persist(); updateWallet();};
+  $('#btnWithdraw').onclick=()=>{state.walletDust=Math.max(0,state.walletDust-5); persist(); updateWallet();};
 
-  // Tabs
+  // ---------- inventory tab ----------
   tabPlay.onclick=()=>setTab('play'); tabInv.onclick=()=>setTab('inv');
-  function setTab(which){const inv=which==='inv'; playCard.style.display=inv?'none':'block'; invCard.style.display=inv?'block':'none'; tabPlay.classList.toggle('active',!inv); tabInv.classList.toggle('active',inv); if(inv) renderInventory();}
+  function setTab(t){const inv=t==='inv'; playCard.style.display=inv?'none':'block'; invCard.style.display=inv?'block':'none'; tabPlay.classList.toggle('active',!inv); tabInv.classList.toggle('active',inv); if(inv) renderInventory();}
   function renderInventory(){
     amuletInfo.textContent=`Amulet of Life: ${state.stash.amulet.have?'owned':'none'}`;
-    entryInfo.textContent=`Free entry today: ${freeEntryAvailable()?'yes':'no'}`;
-
+    entryInfo.textContent=`Free entry today: ${(state.stash.amulet.have && state.stash.amulet.lastUsed!==todayStr())?'yes':'no'}`;
     const wEq=state.stash.equip.weapon, aEq=state.stash.equip.armour;
-    weaponsGrid.innerHTML=''; (state.stash.weapons||[]).forEach(id=>{const w=WEAPONS.find(x=>x.id===id); if(!w) return; const d=document.createElement('div'); d.className='item'; d.innerHTML=`<div><b>${w.name}</b><div class="hint">+${w.atk} attack, +${w.hp} HP</div></div>`; const b=document.createElement('button'); b.textContent=(wEq===id)?'Equipped':'Equip'; b.onclick=()=>{state.stash.equip.weapon=id; persist(); renderInventory();}; d.appendChild(b); weaponsGrid.appendChild(d);});
-    armoursGrid.innerHTML=''; (state.stash.armours||[]).forEach(id=>{const a=ARMOURS.find(x=>x.id===id); if(!a) return; const d=document.createElement('div'); d.className='item'; d.innerHTML=`<div><b>${a.name}</b><div class="hint">+${a.def} defense, +${a.hp} HP</div></div>`; const b=document.createElement('button'); b.textContent=(aEq===id)?'Equipped':'Equip'; b.onclick=()=>{state.stash.equip.armour=id; persist(); renderInventory();}; d.appendChild(b); armoursGrid.appendChild(d);});
-    trinketsGrid.innerHTML=''; (state.stash.trinkets||[]).forEach(id=>{const name=id==='amulet_of_life'?'Amulet of Life':'Trinket'; const d=document.createElement('div'); d.className='item'; d.innerHTML=`<div><b>${name}</b><div class="hint">${id==='amulet_of_life'?'1 free entry/day':''}</div></div>`; const b=document.createElement('button'); b.textContent='—'; b.disabled=true; d.appendChild(b); trinketsGrid.appendChild(d);});
-    consumablesGrid.innerHTML=''; const c=state.stash.consumables; ['Bandage','Food'].forEach(lbl=>{const key=lbl.toLowerCase(); const d=document.createElement('div'); d.className='item'; d.innerHTML=`<div><b>${lbl}</b><div class="hint">x${c[key]||0}</div></div>`; const b=document.createElement('button'); b.textContent='—'; b.disabled=true; d.appendChild(b); consumablesGrid.appendChild(d);});
+    weaponsGrid.innerHTML=''; (state.stash.weapons||[]).forEach(id=>{const w=WEAPONS.find(x=>x.id===id); if(!w) return; const d=document.createElement('div'); d.className='item'; d.innerHTML=`<div><b>${w.name}</b><div class="muted">+${w.atk} atk, +${w.hp} HP</div></div>`; const b=document.createElement('button'); b.textContent=(wEq===id)?'Equipped':'Equip'; b.onclick=()=>{state.stash.equip.weapon=id; persist(); renderInventory();}; d.appendChild(b); weaponsGrid.appendChild(d);});
+    armoursGrid.innerHTML=''; (state.stash.armours||[]).forEach(id=>{const a=ARMOURS.find(x=>x.id===id); if(!a) return; const d=document.createElement('div'); d.className='item'; d.innerHTML=`<div><b>${a.name}</b><div class="muted">+${a.def} def, +${a.hp} HP</div></div>`; const b=document.createElement('button'); b.textContent=(aEq===id)?'Equipped':'Equip'; b.onclick=()=>{state.stash.equip.armour=id; persist(); renderInventory();}; d.appendChild(b); armoursGrid.appendChild(d);});
+    trinketsGrid.innerHTML=''; (state.stash.trinkets||[]).forEach(id=>{const name=id==='amulet_of_life'?'Amulet of Life':'Trinket'; const d=document.createElement('div'); d.className='item'; d.innerHTML=`<div><b>${name}</b></div>`; const b=document.createElement('button'); b.textContent='—'; b.disabled=true; d.appendChild(b); trinketsGrid.appendChild(d);});
+    consumablesGrid.innerHTML=''; const c=state.stash.consumables||{}; [['Bandage','bandage'],['Food','food']].forEach(([lbl,k])=>{const d=document.createElement('div'); d.className='item'; d.innerHTML=`<div><b>${lbl}</b><div class="muted">x${c[k]||0}</div></div>`; const b=document.createElement('button'); b.textContent='—'; b.disabled=true; d.appendChild(b); consumablesGrid.appendChild(d);});
   }
 
-  // ===== UI refresh =====
+  // ---------- run setup ----------
+  function gearStats(){const w=WEAPONS.find(x=>x.id===state.stash.equip.weapon)||{}; const a=ARMOURS.find(x=>x.id===state.stash.equip.armour)||{}; return {atk:w.atk||0, hp:(w.hp||0)+(a.hp||0), def:(a.def||0)};}
+  function newRun(id){const g=gearStats(); return {runId:id, quest:'Quest1', stage:0, alive:true, hp:10+g.hp, stamina:8, nutrition:6, defense:g.def, dust:0, log:[], flags:{}, pending:null, node:'Q1-01'};}
+  function addLog(r,msg,cls){r.log.push(`<span class="${cls||''}">${msg}</span>`);}
   function refreshUI(){
-    elEntry.textContent=`Entry fee: ${ENTRY_FEE} Dust`;
-    elPass.textContent=state.pass?`Pass #${state.pass.runId}${state.pass.usedAmulet?' (free)':''}`:'No Pass';
-    updateWallet();
-
-    if(!state.run){[sHP,sST,sNU,sDF,sDU,sD].forEach(x=>x.textContent='—'); elLog.innerHTML=''; elChoices.innerHTML=''; elCampRow.style.display='none'; scBox.style.display='none'; return;}
-    const r=state.run; sHP.textContent=r.hp; sST.textContent=r.stamina; sNU.textContent=r.nutrition; sDF.textContent=r.defense; sDU.textContent=r.dust; sD.textContent=r.depth;
-    elLog.innerHTML=r.log.slice(-200).map(x=>`• ${x}`).join('<br>');
-    elCampRow.style.display=(isCampDepth(r.depth)&&r.alive)?'flex':'none';
-
-    if(r.scenario){ scBox.style.display='block'; scTitle.textContent=r.scenario.title; scText.textContent=r.scenario.text; scTags.innerHTML=r.scenario.tags.map(t=>`<span class="tag">${t}</span>`).join(''); } else scBox.style.display='none';
+    elEntry.textContent=`Entry fee: ${ENTRY_FEE} Dust`; elPass.textContent=state.pass?`Pass #${state.pass.runId}${state.pass.usedAmulet?' (free)':''}`:'No Pass'; updateWallet();
+    if(!state.run){[sHP,sST,sNU,sDF,sDU,sSTAGE].forEach(x=>x.textContent='—'); scBox.style.display='none'; choicesEl.innerHTML=''; logEl.innerHTML=''; return;}
+    const r=state.run; sHP.textContent=r.hp; sST.textContent=r.stamina; sNU.textContent=r.nutrition; sDF.textContent=r.defense; sDU.textContent=r.dust; sSTAGE.textContent=r.stage+1;
+    const node=Quest1.nodes[r.node]; scBox.style.display='block'; scTitle.textContent=`${node.title}`; scText.textContent=node.text; scTags.innerHTML=node.tags.map(t=>`<span class="tag">${t}</span>`).join('');
+    choicesEl.innerHTML=''; node.choices.forEach((c,i)=>{const b=document.createElement('button'); b.textContent=c.text; b.onclick=()=>openCheck(node,c); choicesEl.appendChild(b);});
+    logEl.innerHTML=r.log.slice(-200).map(x=>`• ${x}`).join('<br>');
   }
 
-  // ===== Modal helpers =====
-  function openModal(){ modal.classList.add('show'); mOutcome.style.display='none'; mClose.style.display='none'; }
-  function closeModal(){ modal.classList.remove('show'); }
-  function animateRoll(done){ mDie.classList.add('rolling'); let t=0; const dur=900, step=60; const tick=()=>{ t+=step; mVal().textContent=(1+Math.floor(Math.random()*100)).toString().padStart(2,'0'); if(t>=dur){ const final=1+Math.floor(Math.random()*100); mVal().textContent=final.toString().padStart(2,'0'); mDie.classList.remove('rolling'); done(final);} else setTimeout(tick,step); }; tick(); }
+  // ---------- dice bonuses ----------
+  function atkBonus(){const w=WEAPONS.find(x=>x.id===state.stash.equip.weapon); return w?(w.atk||0):0;}
+  function defBonus(){const a=ARMOURS.find(x=>x.id===state.stash.equip.armour); return a?Math.floor((a.def||0)/2):0;}
+  const bonusFns={
+    atk:(r)=>atkBonus(),
+    def:(r)=>defBonus(),
+    stam:(r)=>Math.max(0,r.stamina-6),
+    disguise:(r)=>r.flags.disguised?10:0,
+    patrol:(r)=>r.flags.guard_pattern?10:0,
+    route:(r)=>r.flags.safe_route_study?10:0,
+    signet:(r)=>r.flags.signet?10:0,
+    ally:(r)=>r.flags.freed_prisoner?10:0,
+    poisoned:(r)=>r.flags.captain_poisoned?10:0,
+  };
 
-  function renderChoices(rs, actions){ elChoices.innerHTML=''; actions.forEach(a=>{const b=document.createElement('button'); b.textContent=a.text; b.onclick=()=>openDiceFor(a); elChoices.appendChild(b);}); }
-  function openDiceFor(action){ state.pendingCheck=action; mTitle.textContent='Resolve Action'; mSubtitle.textContent=action.text; mDC.textContent='Tap die to roll'; mBonus.textContent='—'; mOutcome.style.display='none'; mClose.style.display='none'; openModal(); }
+  // ---------- modal roll ----------
+  function openCheck(node, choice){
+    state.run.pending={nodeId:state.run.node, choiceIndex: node.choices.indexOf(choice)};
+    mTitle.textContent='Resolve Action'; mSubtitle.textContent=choice.text; mDC.textContent='Tap die to roll';
+    const bonus=(choice.bonus||[]).reduce((a,k)=>a+(bonusFns[k]?bonusFns[k](state.run):0),0);
+    mBonus.textContent= bonus?`Bonus +${bonus}`:'Bonus —'; mOutcome.style.display='none'; mClose.style.display='none'; openModal();
+    mDie.onclick=()=>{
+      if(mDie.classList.contains('rolling')) return;
+      animateRoll((roll)=>{
+        const dc=resolveDC(choice.dc, state.run);
+        const bonus=(choice.bonus||[]).reduce((a,k)=>a+(bonusFns[k]?bonusFns[k](state.run):0),0);
+        const total=roll+bonus; const success=total>=dc;
+        mDC.textContent=`DC ${dc}`; mResult.textContent=`${success?'Success':'Fail'} — roll ${roll}${bonus?` + ${bonus}`:''} = ${total}`; mResult.className='result ' + (success?'good':'bad');
+        const effects = success ? (choice.onSuccess.effects||[]) : (choice.onFail.effects||[]);
+        const list=applyEffects(effects, success?choice.onSuccess.next:choice.onFail.next, node, choice, success);
+        mEffects.innerHTML=list.map(s=>`<li>${s}</li>`).join(''); mOutcome.style.display='block'; mClose.style.display='inline-flex';
+      });
+    };
+  }
+  mClose.onclick=()=>{closeModal(); goNext();};
+  mCancel.onclick=()=>{closeModal(); state.run.pending=null;};
 
-  mDie.addEventListener('click', ()=>{
-    const rs=state.run; if(!rs||!rs.alive) return; const act=state.pendingCheck; if(!act||mDie.classList.contains('rolling')) return;
-    animateRoll((roll)=>{
-      const bonus=act.bonus?act.bonus(rs):0; const total=roll+bonus; const success=total>=act.dc;
-      const fx=[]; if(success) act.onSuccess(rs,fx); else act.onFail(rs,fx);
-      if(Math.random()<0.30 && rs.nutrition>0){ rs.nutrition--; fx.push('-1 Nutrition (effort)'); }
-      if(Math.random()<0.20 && rs.stamina>0){ rs.stamina--; fx.push('-1 Stamina (strain)'); }
+  function resolveDC(dc, r){
+    if(typeof dc==='number') return dc;
+    // allow functions later; for now numbers only
+    return 60;
+  }
 
-      mDC.textContent=`DC ${act.dc}`; mBonus.textContent=bonus?`Bonus +${bonus}`:'Bonus —';
-      mResult.textContent=`${success?'Success':'Fail'} — roll ${roll}${bonus?` + ${bonus}`:''} = ${total}`;
-      mResult.className='result '+(success?'good':'bad');
-      mEffects.innerHTML=fx.map(e=>`<li>${e}</li>`).join(''); mOutcome.style.display='block'; mClose.style.display='inline-flex';
+  // ---------- effect application ----------
+  function pushMsg(msg, cls){addLog(state.run,msg,cls);}
+  function effectTextApplied(arr){return arr;}
+  function applyEffects(effects, next, node, choice, success){
+    const r=state.run; const msgs=[];
+    // default exertion drains
+    if(Math.random()<0.30 && r.nutrition>0){ r.nutrition--; msgs.push('-1 Nutrition (effort)');}
+    if(Math.random()<0.20 && r.stamina>0){ r.stamina--; msgs.push('-1 Stamina (strain)');}
 
-      addLog(rs, `${act.text}: ${success?'Success':'Fail'} (${roll}${bonus?`+${bonus}`:''}=${total} vs ${act.dc})`, success?'good':'bad');
-      state.pendingCheck=null; persist(); refreshUI();
-    });
-  });
-  mClose.addEventListener('click', ()=>{ closeModal(); afterPick(); });
-  mCancel.addEventListener('click', ()=>{ closeModal(); state.pendingCheck=null; });
-
-  // ===== Flow =====
-  function nextScenario(rs){
-    // Follow-up has priority; do not mark used twice (we still count it to avoid immediate reusing)
-    if(rs.follow && Scene[rs.follow.type]){
-      const key = rs.follow.type;
-      rs.scenario = Scene[key](rs);
-      // mark used
-      rs.usedScenes.push(key); rs.recent.push(key); if(rs.recent.length>8) rs.recent.shift();
-      renderChoices(rs, rs.scenario.buildActions()); rs.follow=null; return;
+    for(const ef of (effects||[])){
+      if(typeof ef==='string'){
+        // shorthand like "+2 Dust", "-1 HP", "flag:sewer_route", "item:bandage"
+        const s=ef.trim();
+        if(/^[+-]\d+\s+Dust$/i.test(s)){const v=parseInt(s); r.dust+=v; msgs.push(`${v>0?'+':''}${v} Dust`);}
+        else if(/^[+-]\d+\s+HP$/i.test(s)){const v=parseInt(s); r.hp+=v; msgs.push(`${v>0?'+':''}${v} HP`);}
+        else if(/^[+-]\d+\s+Stamina$/i.test(s)){const v=parseInt(s); r.stamina+=v; msgs.push(`${v>0?'+':''}${v} Stamina`);}
+        else if(/^[+-]\d+\s+Nutrition$/i.test(s)){const v=parseInt(s); r.nutrition+=v; msgs.push(`${v>0?'+':''}${v} Nutrition`);}
+        else if(/^flag:/.test(s)){const k=s.split(':')[1]; r.flags[k]=true; msgs.push(`Flag gained: ${k.replaceAll('_',' ')}`);}
+        else if(/^item:/.test(s)){const it=s.split(':')[1]; const bag=state.stash.consumables; bag[it]=(bag[it]||0)+1; msgs.push(`FOUND: ${it}`); persist();}
+        else if(/^gear:weapon:/.test(s)){const id=s.split(':')[2]; if(!state.stash.weapons.includes(id)){state.stash.weapons.push(id); msgs.push(`FOUND weapon: ${WEAPONS.find(x=>x.id===id)?.name||id}`);} else {r.dust+=2; msgs.push('Duplicate weapon → +2 Dust');} persist();}
+        else if(/^gear:armor:/.test(s)){const id=s.split(':')[2]; if(!state.stash.armours.includes(id)){state.stash.armours.push(id); msgs.push(`FOUND armour: ${ARMOURS.find(x=>x.id===id)?.name||id}`);} else {r.dust+=2; msgs.push('Duplicate armour → +2 Dust');} persist();}
+        else if(s==='amulet_ultra'){ if(!state.stash.amulet.have){state.stash.amulet.have=true; state.stash.trinkets.push('amulet_of_life'); msgs.push('ULTRA RARE: Amulet of Life (1 free entry/day)');} else {r.dust+=10; msgs.push('+10 Dust (relic shards)');} persist();}
+        else {msgs.push(s);} // raw text
+      } else if(typeof ef==='function'){
+        const t=ef(r,state);
+        if(Array.isArray(t)) msgs.push(...t);
+        else if(t) msgs.push(t);
+      }
     }
-    const key = nextSceneKey(rs);
-    rs.scenario = Scene[key](rs);
-    renderChoices(rs, rs.scenario.buildActions());
+    // log
+    pushMsg(`${choice.text}: ${success?'Success':'Fail'}`, success?'good':'bad');
+    // next node
+    r.stage++;
+    if(r.hp<=0){ r.node='Q1-99'; r.alive=false; msgs.push('You succumb to your wounds.'); }
+    else { r.node = next || r.node; }
+    return msgs;
   }
 
-  function advanceThread(rs){
-    const t=Threads[rs.thread.id];
-    if(rs.thread.stage<t.stages.length-1){ rs.thread.stage++; }
-    else { rs.dust+=10; addLog(rs,'Arc complete (+10 Dust).','good'); rs.thread=pickThread(); rs.thread.stage=0; }
-  }
-
-  function step(){
-    const rs=state.run; if(!rs||!rs.alive) return;
-    rs.depth += 1;
-    if(isCampDepth(rs.depth)) addLog(rs,'You reach a camp. You can retire safely here.');
-    nextScenario(rs);
-    refreshUI();
-  }
-
-  function afterPick(){
-    const rs=state.run; if(!rs) return;
-    if(rs.nutrition<=0 && Math.random()<0.5){ const dmg=Math.max(0,1-rs.defense); rs.hp-=dmg; if(dmg>0) addLog(rs,`Starvation bites (-${dmg} HP).`,'bad'); }
-    if(rs.hp<=0){
-      rs.alive=false; addLog(rs,`You die at depth ${rs.depth}. Unbanked Dust lost (${rs.dust}).`,'bad');
-      state.tombstones.unshift({runId:rs.runId,depth:rs.depth,dust:rs.dust,time:Date.now()}); if(state.tombstones.length>50) state.tombstones.pop();
-      state.pass=null; state.run=null; persist(); renderTombs(); refreshUI(); return;
+  function goNext(){
+    const r=state.run; if(!r) return;
+    // epilogue payout or death
+    if(r.node==='Q1-90'){ // Epilogue
+      const msgs=[];
+      // extreme loot 2%
+      if(Math.random()<0.02){
+        const pick=Math.floor(Math.random()*4);
+        if(pick===0){ if(!state.stash.weapons.includes('mythic_warblade')) state.stash.weapons.push('mythic_warblade'); msgs.push('EXTREME LOOT: Mythic Warblade (+15 atk, +2 HP)'); }
+        else if(pick===1){ if(!state.stash.armours.includes('imperial_cuirass')) state.stash.armours.push('imperial_cuirass'); msgs.push('EXTREME LOOT: Imperial Cuirass (+10 Def, +2 HP)'); }
+        else if(pick===2){ if(!state.stash.amulet.have){state.stash.amulet.have=true; state.stash.trinkets.push('amulet_of_life'); msgs.push('EXTREME LOOT: Amulet of Life (free entry/day)'); } else { r.dust+=30; msgs.push('+30 Dust (relic)'); } }
+        else { r.dust+=30; msgs.push('+30 Dust'); }
+      } else {
+        // good loot
+        const roll=Math.random();
+        if(roll<0.33){ if(!state.stash.weapons.includes('short_sword')) state.stash.weapons.push('short_sword'); msgs.push('LOOT: Short Sword'); }
+        else if(roll<0.66){ if(!state.stash.armours.includes('chain')) state.stash.armours.push('chain'); msgs.push('LOOT: Chain Shirt'); }
+        else { r.dust+=10; msgs.push('+10 Dust (purse)'); }
+      }
+      persist();
+      addLog(r, msgs.join(' • '), 'good');
+      // end run (player must start new quest)
+      state.walletDust += r.dust; persist(); updateWallet();
+      addLog(r, `Quest complete: Banked ${r.dust} Dust.`, 'good');
+      state.tombstones.unshift({runId:r.runId,depth:r.stage,dust:r.dust,time:Date.now(),note:'Quest complete'}); if(state.tombstones.length>50) state.tombstones.pop();
+      state.run=null; state.pass=null; renderTombs(); refreshUI(); return;
     }
-    advanceThread(rs);
-    step();
+    if(r.node==='Q1-99'){
+      state.tombstones.unshift({runId:r.runId,depth:r.stage,dust:r.dust,time:Date.now(),note:'Died'}); if(state.tombstones.length>50) state.tombstones.pop();
+      addLog(r,`You die. Unbanked Dust lost (${r.dust}).`,'bad');
+      state.run=null; state.pass=null; renderTombs(); refreshUI(); return;
+    }
+    persist(); refreshUI();
   }
 
-  // ===== Tombstones =====
-  function renderTombs(){ if(!state.tombstones.length){ elTombs.textContent='—'; return; }
-    elTombs.innerHTML=state.tombstones.map(t=>`RIP <b>#${t.runId}</b> — depth ${t.depth}, Dust ${t.dust} <span class="muted">(${new Date(t.time).toLocaleString()})</span>`).join('<br>'); }
+  // ---------- quest graph ----------
+  // Helper shorthands
+  const T=(t)=>({title:t}); // not used now but reserved
+  function node(id, title, text, tags, choices){return {id,title,text,tags,choices};}
+  function c(text,dc,bonus,onSuccess,onFail){return {text,dc,bonus:bonus||[],onSuccess,onFail};}
+  const to=(next,...effects)=>({next,effects});
+  const fx=(...e)=>e;
 
-  // ===== Controls =====
-  $('#btnFaucet').onclick=()=>{ state.walletDust+=20; persist(); updateWallet(); };
-  $('#btnWithdraw').onclick=()=>{ state.walletDust=Math.max(0,state.walletDust-5); persist(); updateWallet(); };
+  const Quest1={id:'Quest1', name:'Blackthorn Manor', nodes:{}};
+
+  // ---- Act I
+  Quest1.nodes['Q1-01']=node('Q1-01','Bleak Roadside','You wake bruised and gearless. Cart tracks score the mud; your ribbon hangs torn on a thorn hedge.',['ACT I','ENV'],[
+    c('Follow the fresh ruts into the scrub',60,['stam'],to('Q1-02','-1 Stamina'),to('Q1-03','-1 Nutrition')),
+    c('Search the hedge for anything usable',65,[],to('Q1-02','item:food'),to('Q1-02','-1 HP')),
+    c('Flag down a passing farmer',55,[],to('Q1-04','flag:manor_known'),to('Q1-02')),
+    c('Sit and steady yourself',40,[],to('Q1-02','+1 Stamina'),to('Q1-02'))
+  ]);
+  Quest1.nodes['Q1-02']=node('Q1-02','Forked Cart Tracks','Two sets of ruts diverge: one toward the old quarry, one to the south road.',['TRACK'],[
+    c('Take the South Road',0,[],to('Q1-04'),to('Q1-04')),
+    c('Cut toward the Old Quarry',0,[],to('Q1-05'),to('Q1-05')),
+    c('Circle wide for dropped goods',62,[],to('Q1-04','item:bandage','flag:found_bandage'),to('Q1-04','-1 Stamina')),
+    c('Hide and watch for a while',55,[],to('Q1-05'),to('Q1-04','-1 Nutrition'))
+  ]);
+  Quest1.nodes['Q1-03']=node('Q1-03','Lost the Trail','The ruts dissolve in trampled grass.',['ENV'],[
+    c('Back to the fork, try again',0,[],to('Q1-02'),to('Q1-02')),
+    c('Forage for berries',55,[],to('Q1-02','item:food'),to('Q1-02','-1 HP')),
+    c('Call out (risky)',60,[],to('Q1-13'),to('Q1-02')),
+    c('Rest and gather yourself',40,[],to('Q1-02','+1 Stamina'),to('Q1-02'))
+  ]);
+  Quest1.nodes['Q1-04']=node('Q1-04','South Road to Market','Ravenshade market hums. Whispers name Blackthorn Manor as a bandit nest.',['TOWN'],[
+    c('Ask the innkeep about bandits',60,[],to('Q1-10','flag:sewer_route'),to('Q1-06','-1 HP')),
+    c('Visit Mirek the fence',55,[],to('Q1-06','gear:weapon:rust_dagger','flag:mirek_debt'),to('Q1-06')),
+    c('Stop by the healer’s tent',50,[],to('Q1-06','item:bandage','flag:help_healer'),to('Q1-06')),
+    c('Sneak a look at the guard board',65,[],to('Q1-06','flag:guard_pattern'),to('Q1-06','-1 Stamina'))
+  ]);
+  Quest1.nodes['Q1-05']=node('Q1-05','Old Quarry Rim','An abandoned quarry yawns. Fresh cart marks vanish near a collapsed gallery.',['ENV'],[
+    c('Squeeze into the gallery',65,[],to('Q1-11'),to('Q1-11','-1 HP')),
+    c('Climb down to the quarry floor',60,[],to('Q1-11','item:rope'),to('Q1-11','-1 HP','-1 Stamina')),
+    c('Watch from above',55,[],to('Q1-11','flag:hidden_door'),to('Q1-11')),
+    c('Backtrack to town first',0,[],to('Q1-04'),to('Q1-04'))
+  ]);
+  Quest1.nodes['Q1-06']=node('Q1-06','Market Backstreets','Smells of stew and smoke; eyes watch from shadows.',['TOWN'],[
+    c('Pickpocket a thug',70,['stam'],to('Q1-07','+3 Dust'),to('Q1-07','-2 HP')),
+    c('Dig for a scrap shield',60,[],to('Q1-07','gear:armor:makeshift'),to('Q1-07','-1 HP')),
+    c('Ask beggars about the manor',50,[],to('Q1-07','flag:servant_sally_port'),to('Q1-07')),
+    c('Rest under the eaves',45,[],to('Q1-07','+1 Stamina'),to('Q1-07'))
+  ]);
+  Quest1.nodes['Q1-07']=node('Q1-07','Leaving Town','Choose your approach to the manor outskirts.',['ROUTE'],[
+    c('Forest path',0,[],to('Q1-08'),to('Q1-08')),
+    c('Riverbank',0,[],to('Q1-09'),to('Q1-09')),
+    c('Return via the quarry',0,[],to('Q1-11'),to('Q1-11')),
+    c('Head straight up the road',0,[],to('Q1-12'),to('Q1-12'))
+  ]);
+  Quest1.nodes['Q1-08']=node('Q1-08','Forest Path','Green hush. A twig snaps.',['ENV','STEALTH'],[
+    c('Slip past the patrol',62,['patrol'],to('Q1-12'),to('Q1-13')),
+    c('Forage for food',55,[],to('Q1-12','item:food'),to('Q1-12','-1 HP')),
+    c('Set a snare',60,[],to('Q1-12','flag:snare_ready'),to('Q1-12','-1 Nutrition')),
+    c('Call out the ambusher',70,['atk'],to('Q1-12','+2 Dust'),to('Q1-13'))
+  ]);
+  Quest1.nodes['Q1-09']=node('Q1-09','Riverbank','Reeds sway; the manor’s wall rises beyond.',['ENV'],[
+    c('Wade quietly toward culvert',60,[],to('Q1-15'),to('Q1-12','-1 HP')),
+    c('Follow driftwood for anything useful',55,[],to('Q1-12','gear:weapon:club'),to('Q1-12')),
+    c('Try to catch a fish',58,[],to('Q1-12','item:food'),to('Q1-12','-1 Stamina')),
+    c('Scout from the reeds',62,[],to('Q1-12','flag:kitchen_gate'),to('Q1-12','-1 HP'))
+  ]);
+  Quest1.nodes['Q1-10']=node('Q1-10','Sewer Route Learned','The innkeep sketches a crude map to a grate under the manor.',['INFO'],[
+    c('Head for the grate at once',0,[],to('Q1-15','flag:sewer_route'),to('Q1-15'))
+  ]);
+
+  // ---- Act II (approach)
+  Quest1.nodes['Q1-11']=node('Q1-11','Quarry Tunnels','Dank air, rusted gates, distant voices.',['ENV','PUZZLE'],[
+    c('Use rope to cross a gap',60,[],to('Q1-20'),to('Q1-20','-1 HP')),
+    c('Pry open a rusted door',65,[],to('Q1-21'),to('Q1-22')),
+    c('Follow the voices',58,[],to('Q1-21','+3 Dust','item:food'),to('Q1-22')),
+    c('Mark this exit for later',45,[],to('Q1-21','flag:quarry_escape'),to('Q1-21'))
+  ]);
+  Quest1.nodes['Q1-12']=node('Q1-12','Manor Perimeter','Torchlight paces atop the wall.',['STEALTH'],[
+    c('Scale ivy on west wall',70,[],to('Q1-23'),to('Q1-24','-2 HP')),
+    c('Shadow the servant cart',62,[],to('Q1-25'),to('Q1-22')),
+    c('Wait for night and watch patterns',55,[],to('Q1-24','flag:guard_pattern'),to('Q1-24','-1 Nutrition')),
+    c('Bluff as a messenger at the gate',72,[],to('Q1-26'),to('Q1-22'))
+  ]);
+  Quest1.nodes['Q1-13']=node('Q1-13','Forest Ambush','A cutthroat lunges from the brush.',['COMBAT'],[
+    c('Dodge and break away',65,['stam'],to('Q1-12','+2 Dust'),to('Q1-12','-2 HP')),
+    c('Counterattack bare-handed',75,['atk'],to('Q1-12','+4 Dust','gear:weapon:rust_dagger'),to('Q1-12','-3 HP')),
+    c('Throw dirt & flee',60,[],to('Q1-12'),to('Q1-12','-1 Stamina')),
+    c('Offer a future cut to stand down',68,[],to('Q1-12','flag:bandit_contact'),to('Q1-12','-1 HP'))
+  ]);
+  Quest1.nodes['Q1-15']=node('Q1-15','Sewer Grate','Cold iron bars; the stone is slick.',['LOCK','TRAP'],[
+    c('Pick the grate',68,[],to('Q1-27'),to('Q1-27','-2 HP')),
+    c('Pry the bars',70,['stam'],to('Q1-27'),to('Q1-27','-1 Stamina')),
+    c('Search for alternate culvert',62,[],to('Q1-27','flag:quiet_entry'),to('Q1-27','-1 Nutrition')),
+    c('Wait for midnight flow to drop',50,[],to('Q1-27'),to('Q1-27','-1 HP'))
+  ]);
+
+  // ---- Act III (inside)
+  Quest1.nodes['Q1-20']=node('Q1-20','Sub-cellar','Dusty racks and old casks.',['SEARCH'],[
+    c('Search the racks',60,[],to('Q1-28','+3 Dust','item:food'),to('Q1-28','-1 Stamina')),
+    c('Listen at the trapdoor',55,[],to('Q1-21','flag:kitchen_sched'),to('Q1-21')),
+    c('Take a cask as a shield',50,[],to('Q1-21','flag:cask_shield','+1 Defense'),to('Q1-22')),
+    c('Mark the route out',0,[],to('Q1-21','flag:subcellar_escape'),to('Q1-21'))
+  ]);
+  Quest1.nodes['Q1-21']=node('Q1-21','Cold Room','Hanging meats, breath fogs.',['STEALTH'],[
+    c('Don a servant cloak',55,[],to('Q1-29','flag:disguised'),to('Q1-29','-1 Nutrition')),
+    c('Sneak through the pantry',60,[],to('Q1-25'),to('Q1-22')),
+    c('Lock the cellar door behind you',58,[],to('Q1-25','flag:delay_patrol'),to('Q1-25','-1 HP')),
+    c('Hide and observe the rhythm',55,[],to('Q1-25','flag:break_window'),to('Q1-25','-1 Nutrition'))
+  ]);
+  Quest1.nodes['Q1-22']=node('Q1-22','Detained by Guards','Firm hands seize your arms.',['SOCIAL/COMBAT'],[
+    c('Lie that you are a courier',72,['disguise'],to('Q1-26'),to('Q1-30')),
+    c('Offer a bribe (3 Dust)',55,[],to('Q1-31','-3 Dust'),to('Q1-30','-3 Dust')),
+    c('Sudden shove & run',68,['stam'],to('Q1-29'),to('Q1-30','-3 HP')),
+    c('Fight your way free',75,['atk'],to('Q1-29','+5 Dust'),to('Q1-30','-4 HP'))
+  ]);
+  Quest1.nodes['Q1-23']=node('Q1-23','Roof Eaves','Tiles crunch softly beneath you.',['STEALTH'],[
+    c('Pry a window',65,[],to('Q1-32'),to('Q1-31')),
+    c('Traverse to the skylight',70,[],to('Q1-33'),to('Q1-31','-2 HP')),
+    c('Descend on a rope to the balcony',68,[],to('Q1-34'),to('Q1-31','-1 Stamina')),
+    c('Observe rooftop patrol',55,[],to('Q1-23','flag:roof_timing'),to('Q1-31','-1 HP'))
+  ]);
+  Quest1.nodes['Q1-24']=node('Q1-24','Hedge Shadow','You wait, studying patterns.',['STEALTH'],[
+    c('Try the wall again',0,[],to('Q1-12'),to('Q1-12')),
+    c('Circle to the servant yard',0,[],to('Q1-25'),to('Q1-25')),
+    c('Bide time and conserve energy',45,[],to('Q1-12','+1 Stamina'),to('Q1-12')),
+    c('Withdraw and rethink',0,[],to('Q1-12'),to('Q1-12'))
+  ]);
+  Quest1.nodes['Q1-25']=node('Q1-25','Kitchens','Heat, knives, and shouting cooks.',['SOCIAL','STEALTH'],[
+    c('Blend in with servants',60,['disguise'],to('Q1-29'),to('Q1-22')),
+    c('Spike a wine decanter',70,[],to('Q1-29','flag:poisoned_wine'),to('Q1-29','-1 Stamina')),
+    c('Steal a knife',55,[],to('Q1-29','gear:weapon:knife'),to('Q1-29','-1 HP')),
+    c('Grab a loaf of bread',50,[],to('Q1-29','item:food'),to('Q1-29'))
+  ]);
+  Quest1.nodes['Q1-26']=node('Q1-26','Front Hall','Polished marble and a looming statue.',['SOCIAL'],[
+    c('Demand to see the steward',70,['signet'],to('Q1-35'),to('Q1-30')),
+    c('Sneak behind the statue',62,[],to('Q1-36'),to('Q1-22')),
+    c('Pretend to be a minstrel',72,[],to('Q1-31'),to('Q1-22')),
+    c('Lift a signet from the cloakroom',68,[],to('Q1-35','flag:signet'),to('Q1-22','-1 HP'))
+  ]);
+  Quest1.nodes['Q1-27']=node('Q1-27','Sewers','Gases blur your eyes; water whispers.',['ENV','TRAP'],[
+    c('Avoid gas pockets',60,[],to('Q1-36'),to('Q1-36','-2 HP')),
+    c('Swim the sump',65,['stam'],to('Q1-30'),to('Q1-30','-1 Stamina')),
+    c('Search flotsam',55,[],to('Q1-36','+2 Dust','flag:lockpick'),to('Q1-36','-1 HP')),
+    c('Wait and listen',50,[],to('Q1-36','flag:guard_pattern'),to('Q1-36'))
+  ]);
+  Quest1.nodes['Q1-28']=node('Q1-28','Barrel Store','Cool and quiet.',['SEARCH'],[
+    c('Onward to the stairs',0,[],to('Q1-29'),to('Q1-29')),
+    c('Take a moment to breathe',45,[],to('Q1-29','+1 Stamina'),to('Q1-29')),
+    c('Eat from your find',0,[],to('Q1-29','item:food'),to('Q1-29')),
+    c('Listen for patrols',55,[],to('Q1-29','flag:guard_pattern'),to('Q1-29'))
+  ]);
+  Quest1.nodes['Q1-29']=node('Q1-29','Servants’ Stairs','A narrow stairwell spirals up and down.',['HUB'],[
+    c('Up to the Gallery',0,[],to('Q1-31'),to('Q1-31')),
+    c('Down to the Cells',0,[],to('Q1-30'),to('Q1-30')),
+    c('Across to the Library',0,[],to('Q1-34'),to('Q1-34')),
+    c('Slip into the secret panel',0,[],to('Q1-36'),to('Q1-36'))
+  ]);
+  Quest1.nodes['Q1-30']=node('Q1-30','Cell Block','Groans echo behind the bars.',['RESCUE'],[
+    c('Free a prisoner',62,[],to('Q1-29','flag:freed_prisoner'),to('Q1-29')),
+    c('Interrogate the gaoler',65,[],to('Q1-37','flag:armory_key'),to('Q1-29','-2 HP')),
+    c('Search confiscated goods',60,[],to('Q1-29','+2 Dust','gear:weapon:short_sword'),to('Q1-29','-1 Stamina')),
+    c('Stash contraband for exit',50,[],to('Q1-29','flag:cell_stash'),to('Q1-29'))
+  ]);
+  Quest1.nodes['Q1-31']=node('Q1-31','Gallery','Soft music; eyes and blades both glitter.',['STEALTH','SOCIAL'],[
+    c('Blend with guests',62,['signet'],to('Q1-35'),to('Q1-22')),
+    c('Cut a noble’s purse',68,[],to('Q1-35','+5 Dust'),to('Q1-22','-2 HP')),
+    c('Slip behind a tapestry',60,[],to('Q1-36'),to('Q1-36','-1 Stamina')),
+    c('Start a distraction',65,[],to('Q1-34'),to('Q1-22'))
+  ]);
+  Quest1.nodes['Q1-32']=node('Q1-32','Attic','Dust motes swim in candlelight.',['SEARCH'],[
+    c('Find old guard armor',62,[],to('Q1-33','gear:armor:light'),to('Q1-33','-1 Stamina')),
+    c('Discover peep vents',55,[],to('Q1-33','flag:target_in_study'),to('Q1-33')),
+    c('Rope to a chandelier path',65,[],to('Q1-33'),to('Q1-33','-1 HP')),
+    c('Cache a backup weapon',45,[],to('Q1-33','flag:attic_cache'),to('Q1-33'))
+  ]);
+  Quest1.nodes['Q1-33']=node('Q1-33','Skylight Above the Hall','The steward’s voice carries.',['STEALTH'],[
+    c('Eavesdrop on the steward',60,[],to('Q1-38','flag:safe_route_study'),to('Q1-26')),
+    c('Cut the glass and descend',70,[],to('Q1-26'),to('Q1-26','-2 HP')),
+    c('Traverse to library roof',62,[],to('Q1-34'),to('Q1-34','-1 Stamina')),
+    c('Cross back to eaves',0,[],to('Q1-23'),to('Q1-23'))
+  ]);
+  Quest1.nodes['Q1-34']=node('Q1-34','Library','Stacks of tomes; the smell of vellum.',['PUZZLE','SEARCH'],[
+    c('Solve the shelf sigil',68,[],to('Q1-38'),to('Q1-38','-1 Stamina')),
+    c('Search the desk',62,[],to('Q1-38','flag:map_of_manor'),to('Q1-38','-1 HP')),
+    c('Hide among the stacks',55,[],to('Q1-38'),to('Q1-22')),
+    c('Take a heavy tome',50,[],to('Q1-38','flag:book_bludgeon'),to('Q1-38'))
+  ]);
+  Quest1.nodes['Q1-35']=node('Q1-35','Audience Chamber','Banners stir; the steward presides.',['SOCIAL'],[
+    c('Accuse the captain openly',72,['signet'],to('Q1-41'),to('Q1-22')),
+    c('Butter up the steward',65,[],to('Q1-38','flag:steward_allied'),to('Q1-38')),
+    c('Spike the captain’s wine (if flagged)',55,[],to('Q1-38','flag:captain_poisoned'),to('Q1-38')),
+    c('Plant fake orders',60,[],to('Q1-38','flag:thin_guards'),to('Q1-38'))
+  ]);
+  Quest1.nodes['Q1-36']=node('Q1-36','Secret Panel','Narrow beams and dust.',['INFIL'],[
+    c('Crawl the service shaft',60,[],to('Q1-38'),to('Q1-38','-1 HP')),
+    c('Loose a grate to the cells',55,[],to('Q1-30'),to('Q1-30','-1 Stamina')),
+    c('Plant an escape rope',50,[],to('Q1-38','flag:panel_escape'),to('Q1-38')),
+    c('Wait and watch the corridor',52,[],to('Q1-38','flag:guard_pattern'),to('Q1-38'))
+  ]);
+  Quest1.nodes['Q1-37']=node('Q1-37','Armory','Racks of steel await.',['LOOT'],[
+    c('Take a Short Sword',0,[],to('Q1-38','gear:weapon:short_sword'),to('Q1-38')),
+    c('Take a Chain Shirt',0,[],to('Q1-38','gear:armor:chain'),to('Q1-38')),
+    c('Take a Tower Shield',0,[],to('Q1-38','gear:armor:tower'),to('Q1-38')),
+    c('Take the Warblade',0,[],to('Q1-38','gear:weapon:warblade','+1 HP'),to('Q1-38'))
+  ]);
+  Quest1.nodes['Q1-38']=node('Q1-38','Study Corridor','Footsteps and murmurs beyond the doors.',['STEALTH','HUB'],[
+    c('Sneak into the Study',65,['route'],to('Q1-39'),to('Q1-40')),
+    c('Take the Bedroom route',62,[],to('Q1-42'),to('Q1-40')),
+    c('Leave a calling card to lure him',55,[],to('Q1-43'),to('Q1-40')),
+    c('Rig a trap on the corridor',68,[],to('Q1-39','flag:trap_ready'),to('Q1-39','-1 HP'))
+  ]);
+
+  // ---- Act IV (boss setups)
+  Quest1.nodes['Q1-39']=node('Q1-39','The Study','Maps, a locked chest, and the bandit captain.',['BOSS PREP'],[
+    c('Ambush from behind',70,['ally'],to('Q1-41'),to('Q1-40')),
+    c('Poison his cup',60,[],to('Q1-41','flag:captain_poisoned'),to('Q1-40')),
+    c('Crack the chest quietly',72,[],to('Q1-41','+8 Dust','flag:captain_exit'),to('Q1-40')),
+    c('Intimidate with evidence',68,['signet'],to('Q1-41'),to('Q1-40'))
+  ]);
+  Quest1.nodes['Q1-40']=node('Q1-40','Hall Clash','Steel rings as minions pour in.',['COMBAT'],[
+    c('Fall back to your planted trap',65,[],to('Q1-41','flag:guards_thinned'),to('Q1-41','-3 HP')),
+    c('Flee to library & reset',62,[],to('Q1-39'),to('Q1-41','-2 HP')),
+    c('Rally the freed prisoner',55,['ally'],to('Q1-41','flag:ally_bonus'),to('Q1-41','-1 HP')),
+    c('Hurl a cask/torch',60,[],to('Q1-41','+3 Dust'),to('Q1-41','-1 Stamina'))
+  ]);
+  Quest1.nodes['Q1-41']=node('Q1-41','Boss Duel','The Bandit Captain grins and draws steel.',['BOSS'],[
+    c('Measured strikes',70,['atk','poisoned'],to('Q1-44'),to('Q1-45','-3 HP')),
+    c('Go for the disarm',72,['def'],to('Q1-41','flag:boss_weakened'),to('Q1-45','-2 HP')),
+    c('Call out his crimes to shake him',65,[],to('Q1-41','flag:boss_shaken'),to('Q1-41')),
+    c('Desperate lunge',78,['stam'],to('Q1-44'),to('Q1-45','-4 HP'))
+  ]);
+  Quest1.nodes['Q1-42']=node('Q1-42','Bedroom','Perfume, steel, secrets.',['STEALTH','LOOT'],[
+    c('Search for ledger evidence',62,[],to('Q1-39','flag:evidence'),to('Q1-40')),
+    c('Take armor from armoire',60,[],to('Q1-39','gear:armor:light'),to('Q1-39','-1 Stamina')),
+    c('Hide and wait behind the drapes',55,[],to('Q1-41'),to('Q1-40')),
+    c('Set a room snare',65,[],to('Q1-39','flag:trap_ready'),to('Q1-39','-1 HP'))
+  ]);
+  Quest1.nodes['Q1-43']=node('Q1-43','Roof Chase','The captain bolts for the rooftops.',['CHASE'],[
+    c('Leap the gap to tackle him',68,[],to('Q1-41','flag:boss_shaken'),to('Q1-41','-2 HP')),
+    c('Slide down ivy to cut him off',65,[],to('Q1-41'),to('Q1-41','-1 Stamina')),
+    c('Hurl a thrown object',60,[],to('Q1-41','flag:boss_weakened'),to('Q1-41')),
+    c('Let him run; tail him',62,[],to('Q1-41','flag:stash_found'),to('Q1-41'))
+  ]);
+  Quest1.nodes['Q1-45']=node('Q1-45','Boss Phase 2','Wounded, the captain fights dirty.',['BOSS'],[
+    c('Grapple and pin',70,['def'],to('Q1-44'),to('Q1-46','-3 HP')),
+    c('Strike at the weak spot',72,['atk'],to('Q1-44'),to('Q1-46','-3 HP')),
+    c('Kick the table to gain space',62,[],to('Q1-41'),to('Q1-41','-1 Stamina')),
+    c('Feign collapse, counter hard',75,[],to('Q1-44'),to('Q1-46','-4 HP'))
+  ]);
+  Quest1.nodes['Q1-46']=node('Q1-46','Near Death','Blood slicks your hands.',['CHECK'],[
+    c('Bandage up',55,[],(r)=>({next:'Q1-41',effects:(state.stash.consumables.bandage>0?['+2 HP',function(){state.stash.consumables.bandage--; return 'Used Bandage';}]:['(No bandage)'])}),(r)=>({next:'Q1-41',effects:['Wasted effort']})),
+    c('Crawl for a weapon',60,[],to('Q1-41','flag:attic_cache','gear:weapon:short_sword'),to('Q1-41','-1 HP')),
+    c('Plead and stall',58,[],to('Q1-41','flag:boss_shaken'),to('Q1-41')),
+    c('Final stand',78,[],to('Q1-44'),to('Q1-99'))
+  ]);
+
+  // ---- Act V (resolution)
+  Quest1.nodes['Q1-44']=node('Q1-44','Captain Falls','He crashes to the floor, breath ragged.',['RESOLUTION'],[
+    c('Finish him',0,[],to('Q1-47','flag:captain_dead'),to('Q1-47')),
+    c('Spare him for information',55,[],to('Q1-47','flag:vault_niche','+2 Dust'),to('Q1-47','-1 HP')),
+    c('Deliver him to the steward',60,[],to('Q1-47','flag:steward_bonus'),to('Q1-47')),
+    c('Search the study thoroughly',62,[],to('Q1-47','+5 Dust','flag:evidence'),to('Q1-47','-1 Nutrition'))
+  ]);
+  Quest1.nodes['Q1-47']=node('Q1-47','Escape Route','It’s time to leave Blackthorn Manor.',['ESCAPE'],[
+    c('Secret panel rope',55,[],to('Q1-90'),to('Q1-90','-1 HP')),
+    c('Sub-cellar to quarry',55,[],to('Q1-90'),to('Q1-90','-1 Stamina')),
+    c('Walk out with a writ',55,[],to('Q1-90'),to('Q1-90','-1 HP')),
+    c('Roof and night garden',60,[],to('Q1-90'),to('Q1-90','-1 HP'))
+  ]);
+  Quest1.nodes['Q1-90']=node('Q1-90','Epilogue: Settlement','You sell what you can and settle scores.',['REWARDS'],[
+    c('Take reward & tally loot',0,[],to('Q1-90',function(r){r.dust+=(10 + (r.flags.steward_bonus?5:0) + (r.flags.evidence?5:0) + (r.flags.captain_poisoned?2:0) + (r.flags.found_bandage?1:0) + (r.flags.cell_stash?1:0) + (r.flags.stash_found?3:0)); return `Quest payout tallied (+${r.dust} Dust total in run)`;}),to('Q1-90'))
+  ]);
+  Quest1.nodes['Q1-99']=node('Q1-99','Death','Your story ends here…',['TOMBSTONE'],[
+    c('Accept your fate',0,[],to('Q1-99'),to('Q1-99')),
+    c('—',0,[],to('Q1-99'),to('Q1-99')),
+    c('—',0,[],to('Q1-99'),to('Q1-99')),
+    c('—',0,[],to('Q1-99'),to('Q1-99'))
+  ]);
+
+  // ---------- start / controls ----------
+  function renderTombs(){ if(!state.tombstones.length){tombsEl.textContent='—'; return;} tombsEl.innerHTML=state.tombstones.map(t=>`RIP <b>#${t.runId}</b> — stage ${t.depth}, Dust ${t.dust} <span class="muted">(${new Date(t.time).toLocaleString()})</span> ${t.note?'— '+t.note:''}`).join('<br>'); }
   $('#btnStart').onclick=()=>{
     if(state.pass||state.run) return;
     let used=false;
@@ -568,19 +640,12 @@
     else{ if(state.walletDust<ENTRY_FEE){ alert('Not enough Dust. Use Add Test Dust or Amulet.'); return; } state.walletDust-=ENTRY_FEE; persist(); updateWallet(); }
     const id=Math.floor(Date.now()/1000).toString(36);
     state.pass={runId:id,usedAmulet:used}; state.run=newRun(id);
-    addLog(state.run,`Run started. Entry ${used?'(Amulet free)':ENTRY_FEE+' Dust'}.`,'good');
-    step(); refreshUI();
-  };
-  $('#btnRetire').onclick=()=>{
-    const r=state.run; if(!r) return;
-    if(!isCampDepth(r.depth)){ addLog(r,'You cannot retire here. Find a camp.'); refreshUI(); return; }
-    state.walletDust+=r.dust; persist(); updateWallet();
-    addLog(r,`You retire with ${r.dust} Dust → banked.`,'good');
-    r.alive=false; state.pass=null; state.run=null; refreshUI();
+    addLog(state.run,`Quest started. Entry ${used?'(Amulet free)':ENTRY_FEE+' Dust'}.`,'good');
+    refreshUI();
   };
 
-  // ===== Init =====
-  function init(){ elEntry.textContent=`Entry fee: ${ENTRY_FEE} Dust`; renderTombs(); refreshUI(); renderInventory(); }
+  // ---------- initial UI ----------
+  function init(){ elEntry.textContent=`Entry fee: ${ENTRY_FEE} Dust`; updateWallet(); renderInventory(); renderTombs(); refreshUI(); }
   init();
 
 })();
